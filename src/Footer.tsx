@@ -14,7 +14,7 @@ const Footer = () => {
           <nav className="list-none mb-10">
             <li>
                 <Link to={"/meme/"} className="text-gray-600 hover:text-gray-800">
-                    <div>Get MEME</div>
+                    <div>Get TRUNK</div>
                 </Link>
             </li>
             <li>
@@ -23,23 +23,13 @@ const Footer = () => {
                 </Link>
             </li>
             <li>
-              <a href="https://github.com/andytudhope/meme-ception" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800">Contribute</a>
+              <a href="https://github.com/Jonny-Ringo/trunk/blob/main/img/trunk_icon.png" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800">Contribute</a>
             </li>
           </nav>
         </div>
         <div className="flex-grow sm:pl-8 sm:mt-0 mt-8 sm:text-left text-center">
-          <h2 className="title-font font-medium text-gray-900 tracking-widest text-sm mb-3">Legal Stuff</h2>
-          <nav className="list-none mb-10">
-            <li>
-              <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800">Terms and Conditions</a>
-            </li>
-            <li>
-              <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer"  className="text-gray-600 hover:text-gray-800">Securities Notice</a>
-            </li>
-            <li>
-              <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer"  className="text-gray-600 hover:text-gray-800">Further Reading</a>
-            </li>
-          </nav>
+          
+          
         </div>
       </div>
     </footer>

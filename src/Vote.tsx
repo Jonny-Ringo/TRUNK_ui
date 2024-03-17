@@ -4,7 +4,7 @@ import { PermissionType } from 'arconnect'
 
 import Footer from './Footer';
 
-const MEME = "-a4T7XLMDGTcu8_preKXdUT6__4sJkMhYLEJZkXUYd0"
+const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
@@ -28,8 +28,8 @@ const Vote = () => {
         await window.arweaveWallet.connect(
             permissions,
             {
-                name: "MEME-CEPTION",
-                logo: "OVJ2EyD3dKFctzANd0KX_PCgg8IQvk0zYqkWIj-aeaU"
+                name: "TRUNK",
+                logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
             }
         )
         try {
@@ -43,7 +43,7 @@ const Vote = () => {
     const getVotes = async () => {
         try {
             const result = await dryrun({
-                process: MEME,
+                process: TRUNK,
                 tags: [
                     { name: 'Action', value: "Get-Votes" }
                 ]
@@ -64,7 +64,7 @@ const Vote = () => {
         console.log(id, side)
         try {
             const getVoteMessage = await message({
-                process: MEME,
+                process: TRUNK,
                 tags: [
                     { name: 'Action', value: 'Vote' },
                     { name: 'Side', value: side.toString() },
@@ -75,7 +75,7 @@ const Vote = () => {
             try {
                 let { Messages, Error } = await result({
                     message: getVoteMessage,
-                    process: MEME,
+                    process: TRUNK,
                 });
                 if (Error) {
                     alert("Error handling staking:" + Error);
@@ -123,7 +123,7 @@ const Vote = () => {
                                 <button onClick={() => vote(item.tx, "nay")} className="bg-red-600 hover:bg-red-400 text-white font-bold py-2 px-4 rounded">
                                     No 
                                 </button>
-                                <p className='text-sm my-2'>Your vote is cast with all the MEME you currently have staked.</p>
+                                <p className='text-sm my-2'>Your vote is cast with all the TRUNK you currently have staked.</p>
                             </div>
                         ) :
                         (

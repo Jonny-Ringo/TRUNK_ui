@@ -5,7 +5,7 @@ import { PermissionType } from 'arconnect'
 
 import Footer from './Footer';
 
-const MEME = "-a4T7XLMDGTcu8_preKXdUT6__4sJkMhYLEJZkXUYd0"
+const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
 const CRED = "Sa0iBLPNyJQrwpTTG-tWLQU-1QeUAJA73DdxGGiKoJc"
 
 const permissions: PermissionType[] = [
@@ -20,9 +20,9 @@ interface Tag {
     value: string;
 }
 
-function Meme() {
+function Trunk() {
     const [address, setAddress] = useState('')
-    const [memeBalance, setMemeBalance] = useState(0)
+    const [trunkBalance, setTrunkBalance] = useState(0)
     const [credBalance, setCredBalance] = useState(0)
     const [credValue, setCredValue] = useState('')
     const [stakeValue, setStakeValue] = useState('')
@@ -48,8 +48,8 @@ function Meme() {
         await window.arweaveWallet.connect(
             permissions,
             {
-                name: "MEME-CEPTION",
-                logo: "OVJ2EyD3dKFctzANd0KX_PCgg8IQvk0zYqkWIj-aeaU"
+                name: "TRUNK",
+                logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
             }
         )
         try {
@@ -69,7 +69,7 @@ function Meme() {
                 process: CRED,
                 tags: [
                     { name: 'Action', value: 'Transfer' },
-                    { name: 'Recipient', value: MEME },
+                    { name: 'Recipient', value: TRUNK },
                     { name: 'Quantity', value: credUnits }
                 ],
                 signer: createDataItemSigner(window.arweaveWallet),
@@ -92,7 +92,7 @@ function Meme() {
                     setSwapSuccess(true)
                 }
             } catch (error) {
-                alert("There was an error when swapping CRED for MEME: " + error)
+                alert("There was an error when swapping CRED for TRUNK: " + error)
             }
         } catch (error) {
             alert('There was an error swapping: ' + error)
@@ -102,13 +102,13 @@ function Meme() {
     const stake = async () => {
         var value = parseInt(stakeValue)
         var units = value * 1000
-        var memeUnits = units.toString()
+        var trunkUnits = units.toString()
         try {
             const getStakeMessage = await message({
-                process: MEME,
+                process: TRUNK,
                 tags: [
                     { name: 'Action', value: 'Stake' },
-                    { name: 'Quantity', value: memeUnits },
+                    { name: 'Quantity', value: trunkUnits },
                     { name: 'UnstakeDelay', value: '1000' },
                 ],
                 signer: createDataItemSigner(window.arweaveWallet),
@@ -116,7 +116,7 @@ function Meme() {
             try {
                 let { Messages, Error } = await result({
                     message: getStakeMessage,
-                    process: MEME,
+                    process: TRUNK,
                 });
                 if (Error) {
                     alert("Error handling staking:" + Error);
@@ -128,7 +128,7 @@ function Meme() {
                 }
                 setStakeSuccess(true)
             } catch (error) {
-                alert("There was an error when staking MEME: " + error)
+                alert("There was an error when staking TRUNK: " + error)
             }
         } catch (error) {
             alert('There was an error staking: ' + error)
@@ -139,7 +139,7 @@ function Meme() {
         const fetchBalance = async (process: string) => {
             if (address) {
                 try {
-                    if (process === MEME) {
+                    if (process === TRUNK) {
                         const messageResponse = await dryrun({
                             process,
                             tags: [
@@ -149,7 +149,7 @@ function Meme() {
                         });
                         const balanceTag = messageResponse.Messages[0].Tags.find((tag: Tag) => tag.name === 'Balance')
                         const balance = balanceTag ? parseFloat((balanceTag.value / 1000).toFixed(4)) : 0;
-                        setMemeBalance(balance)
+                        setTrunkBalance(balance)
                     } else {
                         const messageResponse = await dryrun({
                             process,
@@ -172,7 +172,7 @@ function Meme() {
             if (address) {
                 try {
                     const messageResponse = await dryrun({
-                        process: MEME,
+                        process: TRUNK,
                         tags: [
                             { name: 'Action', value: 'Get-Stakers' },
                         ],
@@ -189,7 +189,7 @@ function Meme() {
             }
         }
 
-        fetchBalance(MEME)
+        fetchBalance(TRUNK)
         fetchBalance(CRED)
         fetchStakers()
     }, [address, swapSuccess])
@@ -211,7 +211,7 @@ function Meme() {
                                 </div>
                                 <div>
                                     <p className='text-lg text-center'>
-                                        MEME: <span className='font-bold'>{memeBalance}</span>
+                                    TRUNK: <span className='font-bold'>{trunkBalance}</span>
                                     </p>
                                 </div>
                             </div>
@@ -260,14 +260,14 @@ function Meme() {
                         <div></div>
                     )
                 }
-                { swapSuccess || memeBalance > 0 ?
+                { swapSuccess || trunkBalance > 0 ?
                     (
                         <div>
                             <div className="flex flex-col space-y-2 items-center justify-center mt-8">
                             <input
                                 type="text"
                                 name="stake"
-                                placeholder="Enter value of MEME to stake"
+                                placeholder="Enter value of TRUNK to stake"
                                 value={stakeValue}
                                 onChange={handleInputChange}
                                 className="py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -276,7 +276,7 @@ function Meme() {
                                 className="py-2 px-4 bg-black text-white font-semibold rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                                 onClick={stake}
                             >
-                                Stake MEME
+                                Stake TRUNK
                             </button>
                             </div>
                         </div>
@@ -286,7 +286,7 @@ function Meme() {
                         <div></div>
                     )  
                 }
-                { stakeSuccess ? <div><p className='text-sm text-center my-2'>You have staked MEME successfully. Please visit the <Link className='font-bold underline' to={"/vote/"}>vote page</Link> to cast votes on different memeframes!</p></div> : <div></div>}
+                { stakeSuccess ? <div><p className='text-sm text-center my-2'>You have staked TRUNK successfully. Please visit the <Link className='font-bold underline' to={"/vote/"}>vote page</Link> to cast votes on different memeframes!</p></div> : <div></div>}
                 { staker ? <p className='text-sm text-center my-2'>You are already staking!<br/>Please visit the <Link className='font-bold underline' to={"/vote/"}>vote page</Link> to cast your vote.</p> : <div></div>}
             </div>
             <Footer />
@@ -295,4 +295,4 @@ function Meme() {
 	);
 }
 
-export default Meme;
+export default Trunk;
