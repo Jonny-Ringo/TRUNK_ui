@@ -13,8 +13,8 @@ const Footer = () => {
           <h2 className="title-font font-medium text-gray-900 tracking-widest text-sm mb-3">Have Some Fun!</h2>
           <nav className="list-none mb-10">
             <li>
-                <Link to={"/meme/"} className="text-gray-600 hover:text-gray-800">
-                    <div>Get TRUNK</div>
+                <Link to={"https://bark.arweave.dev/#/"} className="text-gray-600 hover:text-gray-800">
+                    <div>Swap TRUNK</div>
                 </Link>
             </li>
             <li>
@@ -23,7 +23,7 @@ const Footer = () => {
                 </Link>
             </li>
             <li>
-              <a href="https://github.com/Jonny-Ringo/trunk/blob/main/img/trunk_icon.png" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800">Contribute</a>
+              <a href="https://github.com/Jonny-Ringo/TRUNK_ui" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800">Contribute</a>
             </li>
           </nav>
         </div>
