@@ -30,7 +30,6 @@ const Vote = () => {
     const [voteData, setVoteData] = useState<VoteItem[]>([]);
     const [stakeValue, setStakeValue] = useState('');
     const [unstakeValue, setUnstakeValue] = useState('');
-    const [stakeSuccess, setStakeSuccess] = useState(false);
 
     const fetchAddress = async () => {
         await window.arweaveWallet.connect(permissions, {
@@ -107,6 +106,9 @@ const Vote = () => {
         const value = parseInt(stakeValue);
         const units = value * 1000;
         const trunkUnits = units.toString();
+        console.log("Staking Value:", value);
+        console.log("Units to Stake:", units);
+        console.log("Request Payload:", trunkUnits);
         try {
             const getStakeMessage = await message({
                 process: TRUNK,
@@ -129,7 +131,8 @@ const Vote = () => {
                 alert("No messages were returned from ao. Please try later.");
                 return; 
             }
-            setStakeSuccess(true);
+            // Optionally, handle success (e.g., updating UI or state)
+            alert('Stake successful!');
         } catch (error) {
             alert('There was an error staking: ' + error);
         }
@@ -143,6 +146,9 @@ const Vote = () => {
         const value = parseInt(unstakeValue);
         const units = value * 1000;
         const trunkUnits = units.toString();
+        console.log("Unstaking Value:", value);
+        console.log("Units to Unstake:", units);
+        console.log("Request Payload:", trunkUnits);
         try {
             const getUnstakeMessage = await message({
                 process: TRUNK,
@@ -225,8 +231,6 @@ const Vote = () => {
             <div className='flex flex-wrap justify-center h-100 my-40'>
                 {voteData.length > 0 ? getVoteData() : <p>No votes yet...</p>}
             </div>
-            {stakeSuccess ? 
-                <p>You have staked TRUNK successfully.</p> :
                 <div className="flex flex-col items-center justify-center">
                     <input
                         type="text"
@@ -244,7 +248,7 @@ const Vote = () => {
                     </button>
                 </div>
                 
-            }
+            
 
             {/* Unstake input and button */}
             <div className="flex flex-col items-center justify-center mt-4">
