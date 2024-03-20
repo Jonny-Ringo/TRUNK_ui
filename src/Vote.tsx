@@ -115,7 +115,6 @@ const Vote = () => {
                 tags: [
                     { name: 'Action', value: 'Stake' },
                     { name: 'Quantity', value: trunkUnits },
-                    { name: 'UnstakeDelay', value: '1000' },
                 ],
                 signer: createDataItemSigner(window.arweaveWallet),
             });
