@@ -73,6 +73,7 @@ const Vote = () => {
                     { name: 'Action', value: 'Vote' },
                     { name: 'Side', value: side.toString() },
                     { name: 'TXID', value: id.toString() },
+                    { name : 'VoteID', value: id.toString() },
                 ],
                 signer: createDataItemSigner(window.arweaveWallet),
             });
