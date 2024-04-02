@@ -11,7 +11,7 @@ function App() {
 			<Routes>
 				<Route path={"/"} element={<Home />} />
 				<Route path={"/vote/"} element={<Vote />} />
-        <Route path={"/meme/"} element={<Meme />} />
+        		<Route path={"/meme/"} element={<Meme />} />
 			</Routes>
 		</HashRouter>
 	);
