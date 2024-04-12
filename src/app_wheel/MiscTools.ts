@@ -62,23 +62,22 @@ export const GetAddressStakedTrunkAmount = async (address: string): Promise<numb
                 const allStakers: { [key: string]: StakerInfo } = JSON.parse(result.Messages[0].Data);
                 if (allStakers.hasOwnProperty(address)) {
                     console.log("You have staked: ", allStakers[address].amount);
-                    // Convert and return the amount as a number
                     return parseFloat(allStakers[address].amount);
                 } else {
                     console.log("No staked amount found for the provided address.");
-                    return 0;  // Return 0 or throw an error if address is not found
+                    return 0;
                 }
             } catch (parseError) {
                 console.error("Error parsing data: ", parseError);
-                return 0;  // Return 0 or decide on an error handling strategy
+                return 0;
             }
         } else {
             console.log("No readable data from dryrun!");
-            return 0;  // Return 0 or handle the absence of data appropriately
+            return 0;
         }
     } catch (e) {
         console.error("Error: ", (e as Error).message);
-        return 0;  // Return 0 or use a specific error value or throw
+        return 0;
     }
 };
 

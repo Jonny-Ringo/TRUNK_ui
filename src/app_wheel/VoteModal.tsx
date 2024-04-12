@@ -55,7 +55,16 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         setUnstakeValue('');
         setTrunkBalance(0);
         // setMaxTrunkBalance('');
-      } 
+        console.log("Closing modal...");
+      } else {
+        console.log("Opening modal...");
+
+        // Get current TRUNK balance
+        // fetchBalance(TRUNK);
+
+        // Get staked TRUNK balance
+        CallGetAddressStakedTrunkAmount();
+      }
 
     }, [isOpen]);
 
@@ -348,14 +357,25 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
 
     const CallGetAddressStakedTrunkAmount = async () => {
         try {
-          const result = await GetAddressStakedTrunkAmount(address);
-          setMaxStakedBalance( result );
-          const val = result / 1000;
-          setUnstakeValue( val.toString() );
+            const result = await GetAddressStakedTrunkAmount(address);
+            setMaxStakedBalance( result );
+            
         } catch (error) {
-          console.error("Failed to get stakers: ", error);
+            console.error("Failed to get stakers: ", error);
         }
-      }
+    }
+
+    const CallSetMaxStakeAmount = async () => {
+        try {
+            const result = await GetAddressStakedTrunkAmount(address);
+            setMaxStakedBalance( result );
+            const val = result / 1000;
+            setUnstakeValue( val.toString() );
+            
+        } catch (error) {
+            console.error("Failed to get stakers: ", error);
+        }
+    }
 
 
   return (
@@ -405,7 +425,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                  onChange={handleUnstakeInputChange}
                  className="py-2 px-4 border rounded-md text-black"
                   />
-                <button className="text-white" onClick={CallGetAddressStakedTrunkAmount} > Max </button>
+                <button className="text-white" onClick={CallSetMaxStakeAmount} > Max </button>
             </div>
 
              <button
