@@ -225,6 +225,10 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         fetchVotes();
     }, [address]);
 
+    useEffect(() => {
+        console.log("Data: ", voteData );
+    }, [voteData]);
+
     const fetchBalance = async (process: string) => {
       if (address) {
         console.log( "Fetching balance for :" + address);
@@ -293,14 +297,62 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         );
     }
 
+    function getVoteDataInModal() {
+        return (
+          <>
+            {voteData.map((item, index) => (
+                <div key={index} className='p-4 border border-gray rounded shadow-md w-full'>
+                    <p className='text-2xl mb-4'>Candidate #{index}</p>
+                    <a className='font-bold underline' href={`https://arweave.net/${item.tx}`} target="_blank" rel="noopener noreferrer">Memeframe URL</a>
+                    <p className='mt-4'>Yay: {item.yay / 1000}, Nay: {item.nay / 1000}</p>
+                    <p>Decided at block: {item.deadline}</p>
+                    {address ? (
+                        <div className='text-center mt-4'>
+                            <button onClick={() => vote(item.tx, "yay")} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-4">
+                                Yay 
+                            </button>
+                            <button onClick={() => vote(item.tx, "nay")} className="bg-rose-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded">
+                                Nay 
+                            </button>
+                            <p className='text-sm my-2'>Your vote is cast with all the TRUNK you currently have staked.</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className='text-center my-4'>
+                                <button onClick={fetchAddress} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                    Connect 
+                                </button>
+                            </p>
+                        </div>
+                    )}
+                </div>
+            ))}
+          </>
+        );
+    }
+
+    const fetchAddress = async () => {
+        await window.arweaveWallet.connect(permissions, {
+            name: "TRUNK",
+            logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
+        });
+        try {
+            const address = await window.arweaveWallet.getActiveAddress();
+            // setAddress(address);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="p-4">
 
         <div className="flex flex-col items-center justify-center">
-          {voteData.length > 0 ? getVoteData() : <p>No votes yet...</p>}
+          {voteData.length > 0 ? getVoteDataInModal() : <p>No votes yet...</p>}
 
+          <br/>
           <div className="w-1/2 h-px bg-white mx-auto"></div>
           <br/>
         </div>

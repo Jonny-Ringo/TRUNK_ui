@@ -3,13 +3,12 @@
     src: url('./fonts/Cascadia.ttf') format('truetype');
 }
 
-body {
-    color: aliceblue;
+.wheel{
+  color: aliceblue;
     font-family: 'Cascadia', sans-serif;
 }
 
 .wrapper {
-    /*This part is important for centering*/
     display: grid;
     place-items: center;
   }
