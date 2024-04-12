@@ -16,6 +16,9 @@ import Layout from './Layout';
 
 // import './style.css';
 import './extrastyle.css';
+// Wheel.tsx
+import { GetAddressStakedTrunkAmount } from './MiscTools';
+
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
 const INITIAL_FRAME = "X5TgFGNgbje0JezztY5RL__VnYD9IieHa_9n9p0dMb0"
@@ -59,6 +62,8 @@ function Wheel () {
     const [voteData, setVoteData] = useState<VoteItem[]>([]);
     const [stakeValue, setStakeValue] = useState('');
     const [unstakeValue, setUnstakeValue] = useState('');
+
+    const [ addressStakedTrunk, setAddressStakedTrunk] = useState<number>(0);
 
     const [ typedValue, setTypedValue ] = useState<string>('');
 
@@ -142,6 +147,12 @@ function Wheel () {
     if(animWalletConnected) {
       animWalletConnected.value = isConnected;
       // setTypedValue( "Wallet Connected" );
+
+      console.log("Wallet Connected: ", isConnected);
+
+      // Get max staked amount
+
+
     } else {
       // setTypedValue( "" );
     }
@@ -275,6 +286,62 @@ function Wheel () {
           setIsConnected(false);
         }
       };
+
+      const getStakedTrunk = async () => {
+        try {
+            console.log("Getting stakers...");
+            const result = await dryrun({
+                process: TRUNK,
+                tags: [
+                    { name: 'Action', value: "Stakers" }
+                ]
+            });
+            if (result && result.Messages[0]) {
+                
+              try {
+                const allStakers = JSON.parse(result.Messages[0].Data);
+                // console.log("Parsed stakers: ", allStakers);
+
+                // // Getting the length of the entries
+                // const numberOfStakers = Object.keys(allStakers).length;
+                // console.log("Number of stakers: ", numberOfStakers);
+
+                // for (let key in allStakers) {
+                //     console.log("Staker ", key, " has staked ", allStakers[key].amount);
+                // }
+
+                // Find the connected wallet
+                for (let key in allStakers) {
+                  if( key === address ) {
+                    console.log("You have staked: ", allStakers[key].amount);
+                  }
+                }
+
+                return allStakers;
+              } catch (parseError) {
+                  console.error("Error parsing data: ", parseError);
+                  return "";
+              }
+
+                // return JSON.parse(result.Messages[0].Data);
+            } else {
+                console.log("No readable data from dryrun!");
+                return "";
+            }
+        } catch (e) {
+            console.log(e);
+            return "";
+        }
+    };
+
+    async function CallGetStakers() {
+      try {
+        const result = await GetAddressStakedTrunkAmount(address);
+        setAddressStakedTrunk( result );
+      } catch (error) {
+        console.error("Failed to get stakers: ", error);
+      }
+    }
       
     return (
       <div className='wheel'>
@@ -289,7 +356,6 @@ function Wheel () {
               Welcome to $TRUNK
               </div>
           </div>
-          
 
           <VoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} address={address} />
 

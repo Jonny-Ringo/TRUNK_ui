@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { dryrun, message, createDataItemSigner, result } from '@permaweb/aoconnect/browser';
 import { PermissionType } from 'arconnect';
+import { GetAddressStakedTrunkAmount } from './MiscTools';
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
 
@@ -43,7 +44,8 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     const [trunkBalance, setTrunkBalance] = useState(0)
     const [credBalance, setCredBalance] = useState(0)
 
-    const [maxTrunkBalance, setMaxTrunkBalance] = useState('')
+    const [maxTrunkBalance, setMaxTrunkBalance] = useState('');
+    const [maxStakedBalance, setMaxStakedBalance] = useState<number>(0);
 
     // Reset stake/unstake values
     useEffect(() => {
@@ -344,6 +346,17 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         }
     };
 
+    const CallGetAddressStakedTrunkAmount = async () => {
+        try {
+          const result = await GetAddressStakedTrunkAmount(address);
+          setMaxStakedBalance( result );
+          const val = result / 1000;
+          setUnstakeValue( val.toString() );
+        } catch (error) {
+          console.error("Failed to get stakers: ", error);
+        }
+      }
+
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -381,7 +394,10 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         </div>
 
         <div className="flex flex-col items-center justify-center mt-4">
-              <input
+              
+
+            <div className="flex flex-row items-center justify-center space-x-2">
+                <input
                  type="text"
                  name="unstake"
                  placeholder="Enter TRUNK to unstake"
@@ -389,6 +405,9 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                  onChange={handleUnstakeInputChange}
                  className="py-2 px-4 border rounded-md text-black"
                   />
+                <button className="text-white" onClick={CallGetAddressStakedTrunkAmount} > Max </button>
+            </div>
+
              <button
                className="py-2 px-4 bg-[#EF707E] text-white rounded-md mt-2"
                onClick={unstake}
