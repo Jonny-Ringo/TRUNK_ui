@@ -105,22 +105,22 @@ export const StakeTrunk = async (amount: string): Promise<string> => {
                 process: TRUNK,
             });
             if (Error) {
-                alert("Error handling staking:" + Error);
-                return "";
+                // alert("Error handling staking:" + Error);
+                return "Error handling staking:" + Error;
             }
             if (!Messages || Messages.length === 0) {
-                alert("No messages were returned from ao. Please try later.");
-                return ""; 
+                // alert("No messages were returned from ao. Please try later.");
+                return "No messages were returned from ao. Please try later."; 
             }
-            alert('Stake successful!');
+            // alert('Stake successful!');
             return "Success"; //Messages[0].tx;
         } catch (error) {
-            alert('There was an error staking: ' + error);
+            // alert('There was an error staking: ' + error);
             return "Error";
         }
 };
 
-export const UnstakeTrunk = async (amount: string) => { 
+export const UnstakeTrunk = async (amount: string): Promise<string> => { 
     const value = parseInt(amount);
         const units = value * 1000;
         const trunkUnits = units.toString();
@@ -141,20 +141,22 @@ export const UnstakeTrunk = async (amount: string) => {
                 process: TRUNK,
             });
             if (Error) {
-                alert("Error handling unstaking:" + Error);
-                return;
+                // alert("Error handling unstaking:" + Error);
+                return "Error handling unstaking:" + Error;
             }
             if (!Messages || Messages.length === 0) {
-                alert("No messages were returned from ao. Please try later.");
-                return; 
+                //  alert("No messages were returned from ao. Please try later.");
+                return "No messages were returned from ao. Please try later."; 
             }
             // Optionally, handle success (e.g., updating UI or state)
-            alert('Unstake successful!');
+            // alert('Unstake successful!');
+            return "Success";
         } catch (error) {
-            alert('There was an error unstaking: ' + error);
+            // alert('There was an error unstaking: ' + error);
+            return "Error";
         }
 };
-
+    
 export const FetchAddress = async () => { 
     console.log("Fetching address...");
     try {

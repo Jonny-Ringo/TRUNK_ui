@@ -4,6 +4,7 @@ import { dryrun, message, createDataItemSigner, result } from '@permaweb/aoconne
 import { PermissionType } from 'arconnect';
 import { GetAddressStakedTrunkAmount, FetchAddress } from './MiscTools';
 import { useRive } from "@rive-app/react-canvas";
+import Spinner from './Spinner';
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
 
@@ -48,6 +49,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     const [maxStakedBalance, setMaxStakedBalance] = useState<number>(0);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [loadMessage, setLoadMessage] = useState('');
 
     const {
         rive,
@@ -82,6 +84,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         setStakeValue('');
         setUnstakeValue('');
         setTrunkBalance(0);
+        setLoadMessage('');
       } else {
         UpdateUI();
       }
@@ -102,6 +105,9 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
             if (typeof votes !== 'string') { 
                 setVoteData(votes);
             }
+
+            // Extra second for loading spinner
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             // rive?.pause();
             setIsLoading(false);
@@ -133,6 +139,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
 
     const vote = async (id: string, side: string) => {
         console.log(id, side);
+        setIsLoading(true);
         try {
             const getVoteMessage = await message({
                 process: TRUNK,
@@ -150,16 +157,17 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                     process: TRUNK,
                 });
                 if (Error) {
-                    alert("Error handling vote:" + Error);
+                    setLoadMessage("Error handling vote:" + Error);
                     return;
                 }
                 if (!Messages || Messages.length === 0) {
-                    alert("No messages were returned from ao. Please try later.");
+                    setLoadMessage("No messages were returned from ao. Please try later.");
                     return;
                 }
 
                 UpdateUI();
-                alert("Vote successful!");
+                setLoadMessage("Vote successful!");
+                // alert( "Vote successful!" );
             } catch (e) {
                 console.log(e);
             }
@@ -273,7 +281,12 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
               ></canvas>
             </div> */}
 
-            <div className="flex flex-col items-center justify-center"> ... </div> 
+            {/* <div className="flex flex-col items-center justify-center"> ... </div>  */}
+
+            <Spinner />
+
+            <div className="flex flex-col items-center justify-center"> {loadMessage} </div> 
+
           </>
         );
     }

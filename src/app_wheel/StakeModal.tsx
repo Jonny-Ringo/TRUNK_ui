@@ -4,6 +4,7 @@ import { dryrun, message, createDataItemSigner, result } from '@permaweb/aoconne
 import { PermissionType } from 'arconnect';
 import { GetAddressStakedTrunkAmount, GetTrunkBalance, StakeTrunk, UnstakeTrunk, FetchAddress } from './MiscTools';
 import { useRive } from "@rive-app/react-canvas";
+import Spinner from './Spinner';
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
 
@@ -46,6 +47,7 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     const [amountToUnstake, setAmountToUnstake] = useState<string>("");
 
     const [isLoading, setIsLoading] = useState(false);
+    const [loadMessage, setLoadMessage] = useState('');
 
     const {
         rive,
@@ -108,6 +110,10 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
             setAmountToStake("");
             setAmountToUnstake("");
 
+            // Extra second for loading spinner
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            setLoadMessage("");
             setIsLoading(false);
 
         } catch (error) {
@@ -126,22 +132,24 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     }
 
     const CallStakeTrunk = async () => {
+      setIsLoading(true);
         try {
             const res = await StakeTrunk(amountToStake);
-            console.log("Stake result: ", res);
+            setLoadMessage("Stake result: " +res);
             UpdateUI();
         } catch (error) {
-            console.error("Failed to stake: ", error); 
+            setLoadMessage("Failed to Stake: " + error); 
         }
     }
 
     const CallUnStakeTrunk = async () => {
+      setIsLoading(true);
         try {
             const res = await UnstakeTrunk(amountToUnstake);
-            console.log("Stake result: ", res);
+            setLoadMessage("Unstaked: " + res);
             UpdateUI();
         } catch (error) {
-            console.error("Failed to stake: ", error); 
+            setLoadMessage("Failed to Unstake: " + error);
         }
     }
 
@@ -252,7 +260,11 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
               ></canvas>
             </div> */}
 
-            <div className="flex flex-col items-center justify-center"> ... </div> 
+            {/* <div className="flex flex-col items-center justify-center"> ... </div>  */}
+
+            <Spinner />
+
+            <div className="flex flex-col items-center justify-center"> {loadMessage} </div> 
 
           </>
         );
