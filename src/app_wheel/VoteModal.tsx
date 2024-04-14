@@ -1,9 +1,9 @@
-// VoteModal.tsx
 import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { dryrun, message, createDataItemSigner, result } from '@permaweb/aoconnect/browser';
 import { PermissionType } from 'arconnect';
-import { GetAddressStakedTrunkAmount } from './MiscTools';
+import { GetAddressStakedTrunkAmount, FetchAddress } from './MiscTools';
+import { useRive } from "@rive-app/react-canvas";
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
 
@@ -47,39 +47,69 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     const [maxTrunkBalance, setMaxTrunkBalance] = useState('');
     const [maxStakedBalance, setMaxStakedBalance] = useState<number>(0);
 
+    const [isLoading, setIsLoading] = useState(false);
+
+    const {
+        rive,
+        setCanvasRef,
+        setContainerRef,
+        canvas: canvasRef,
+        container: canvasContainerRef,
+      } = useRive(
+        {
+          src: "/app_wheel/trunk_spinner.riv",
+          artboard: "spinner",
+          stateMachines: "main",
+          autoplay: false,
+          onLoad: () => {
+            console.log("Rive loaded!");
+          },
+          onPlay: () => {
+            console.log('Animation is playing..');
+          },
+          onPause: () => {
+            console.log('Animation is paused..');
+          }
+        },
+        {
+          shouldResizeCanvasToContainer: true,
+        }
+      );
+
     // Reset stake/unstake values
     useEffect(() => {
-
       if(!isOpen) {
         setStakeValue('');
         setUnstakeValue('');
         setTrunkBalance(0);
-        // setMaxTrunkBalance('');
-        console.log("Closing modal...");
       } else {
-        console.log("Opening modal...");
-
-        // Get current TRUNK balance
-        // fetchBalance(TRUNK);
-
-        // Get staked TRUNK balance
-        CallGetAddressStakedTrunkAmount();
+        UpdateUI();
       }
-
     }, [isOpen]);
 
-    // const fetchAddress = async () => {
-    //     await window.arweaveWallet.connect(permissions, {
-    //         name: "TRUNK",
-    //         logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
-    //     });
-    //     try {
-    //         const address = await window.arweaveWallet.getActiveAddress();
-    //         setAddress(address);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
+    const UpdateUI = async () => {
+        try {
+
+            setIsLoading(true);
+            // rive?.play();
+
+            // Get Staked Trunk amount
+            CallGetAddressStakedTrunkAmount();
+
+            getVotes();
+
+            const votes = await getVotes();
+            if (typeof votes !== 'string') { 
+                setVoteData(votes);
+            }
+
+            // rive?.pause();
+            setIsLoading(false);
+
+        } catch (error) {
+            console.error("Failed to update: ", error);
+        }
+    }
 
     const getVotes = async () => {
         try {
@@ -127,6 +157,8 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                     alert("No messages were returned from ao. Please try later.");
                     return;
                 }
+
+                UpdateUI();
                 alert("Vote successful!");
             } catch (e) {
                 console.log(e);
@@ -136,224 +168,16 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         }
     };
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setStakeValue(event.target.value);
-    };
+    // useEffect(() => {
+    //     const fetchVotes = async () => {
+    //         const votes = await getVotes();
+    //         if (typeof votes !== 'string') { 
+    //             setVoteData(votes);
+    //         }
+    //     };
 
-    const setMaxBalance = () => {
-        console.log("Setting max balance...");
-        fetchBalance(TRUNK);
-    }
-
-    useEffect(() => {
-      
-      setStakeValue( trunkBalance.toString() );
-    }, [trunkBalance]);
-
-    const stake = async () => {
-        const value = parseInt(stakeValue);
-        const units = value * 1000;
-        const trunkUnits = units.toString();
-        console.log("Staking Value:", value);
-        console.log("Units to Stake:", units);
-        console.log("Request Payload:", trunkUnits);
-        try {
-            const getStakeMessage = await message({
-                process: TRUNK,
-                tags: [
-                    { name: 'Action', value: 'Stake' },
-                    { name: 'Quantity', value: trunkUnits },
-                ],
-                signer: createDataItemSigner(window.arweaveWallet),
-            });
-            const { Messages, Error } = await result({
-                message: getStakeMessage,
-                process: TRUNK,
-            });
-            if (Error) {
-                alert("Error handling staking:" + Error);
-                return;
-            }
-            if (!Messages || Messages.length === 0) {
-                alert("No messages were returned from ao. Please try later.");
-                return; 
-            }
-            // Optionally, handle success (e.g., updating UI or state)
-            alert('Stake successful!');
-        } catch (error) {
-            alert('There was an error staking: ' + error);
-        }
-    };
-
-    const handleUnstakeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setUnstakeValue(event.target.value);
-    };
-
-    const unstake = async () => {
-        const value = parseInt(unstakeValue);
-        const units = value * 1000;
-        const trunkUnits = units.toString();
-        console.log("Unstaking Value:", value);
-        console.log("Units to Unstake:", units);
-        console.log("Request Payload:", trunkUnits);
-        try {
-            const getUnstakeMessage = await message({
-                process: TRUNK,
-                tags: [
-                    { name: 'Action', value: 'Unstake' },
-                    { name: 'Quantity', value: trunkUnits },
-                ],
-                signer: createDataItemSigner(window.arweaveWallet),
-            });
-            const { Messages, Error } = await result({
-                message: getUnstakeMessage,
-                process: TRUNK,
-            });
-            if (Error) {
-                alert("Error handling unstaking:" + Error);
-                return;
-            }
-            if (!Messages || Messages.length === 0) {
-                alert("No messages were returned from ao. Please try later.");
-                return; 
-            }
-            // Optionally, handle success (e.g., updating UI or state)
-            alert('Unstake successful!');
-        } catch (error) {
-            alert('There was an error unstaking: ' + error);
-        }
-    };
-    
-
-    useEffect(() => {
-        const fetchVotes = async () => {
-            const votes = await getVotes();
-            if (typeof votes !== 'string') { 
-                setVoteData(votes);
-            }
-        };
-
-        fetchVotes();
-    }, [address]);
-
-    useEffect(() => {
-        console.log("Data: ", voteData );
-    }, [voteData]);
-
-    const fetchBalance = async (process: string) => {
-      if (address) {
-        console.log( "Fetching balance for :" + address);
-          try {
-              if (process === TRUNK) {
-                  const messageResponse = await dryrun({
-                      process,
-                      tags: [
-                          { name: 'Action', value: 'Balance' },
-                          { name: 'Recipient', value: address },
-                      ],
-                  });
-                  const balanceTag = messageResponse.Messages[0].Tags.find((tag: Tag) => tag.name === 'Balance')
-                  const balance = balanceTag ? parseFloat((balanceTag.value / 1000).toFixed(4)) : 0;
-                  setTrunkBalance(balance)
-                  
-              } else {
-                  const messageResponse = await dryrun({
-                      process,
-                      tags: [
-                          { name: 'Action', value: 'Balance' },
-                          { name: 'Target', value: address },
-                      ],
-                  });
-                  const balanceTag = messageResponse.Messages[0].Tags.find((tag: Tag) => tag.name === 'Balance')
-                  const balance = balanceTag ? parseFloat((balanceTag.value / 1000).toFixed(4)) : 0;
-                  setCredBalance(balance)
-              }
-          } catch (error) {
-              console.error(error);
-          }
-      }
-  };
-
-    function getVoteData() {
-        return (
-          <>
-            {voteData.map((item, index) => (
-                <div key={index} className='p-4 border border-gray rounded shadow-md max-w-md lg:max-w-xs sm:max-w-sm w-full md:w-1/2 lg:w-1/4 sm:w-full md:mr-2'>
-                    <p className='text-2xl mb-4'>Candidate #{index}</p>
-                    <a className='font-bold underline' href={`https://arweave.net/${item.tx}`} target="_blank" rel="noopener noreferrer">Memeframe URL</a>
-                    <p className='mt-4'>Yay: {item.yay / 1000}, Nay: {item.nay / 1000}</p>
-                    <p>Decided at block: {item.deadline}</p>
-                    {address ? (
-                        <div className='text-center mt-4'>
-                            <button onClick={() => vote(item.tx, "yay")} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-4">
-                                Yay 
-                            </button>
-                            <button onClick={() => vote(item.tx, "nay")} className="bg-rose-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded">
-                                Nay 
-                            </button>
-                            <p className='text-sm my-2'>Your vote is cast with all the TRUNK you currently have staked.</p>
-                        </div>
-                    ) : (
-                        <div>
-                            <p className='text-center my-4'>
-                                {/* <button onClick={fetchAddress} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                                    Connect 
-                                </button> */}
-                            </p>
-                        </div>
-                    )}
-                </div>
-            ))}
-          </>
-        );
-    }
-
-    function getVoteDataInModal() {
-        return (
-          <>
-            {voteData.map((item, index) => (
-                <div key={index} className='p-4 border border-gray rounded shadow-md w-full'>
-                    <p className='text-2xl mb-4'>Candidate #{index}</p>
-                    <a className='font-bold underline' href={`https://arweave.net/${item.tx}`} target="_blank" rel="noopener noreferrer">Memeframe URL</a>
-                    <p className='mt-4'>Yay: {item.yay / 1000}, Nay: {item.nay / 1000}</p>
-                    <p>Decided at block: {item.deadline}</p>
-                    {address ? (
-                        <div className='text-center mt-4'>
-                            <button onClick={() => vote(item.tx, "yay")} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-4">
-                                Yay 
-                            </button>
-                            <button onClick={() => vote(item.tx, "nay")} className="bg-rose-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded">
-                                Nay 
-                            </button>
-                            <p className='text-sm my-2'>Your vote is cast with all the TRUNK you currently have staked.</p>
-                        </div>
-                    ) : (
-                        <div>
-                            <p className='text-center my-4'>
-                                <button onClick={fetchAddress} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                                    Connect 
-                                </button>
-                            </p>
-                        </div>
-                    )}
-                </div>
-            ))}
-          </>
-        );
-    }
-
-    const fetchAddress = async () => {
-        await window.arweaveWallet.connect(permissions, {
-            name: "TRUNK",
-            logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
-        });
-        try {
-            const address = await window.arweaveWallet.getActiveAddress();
-            // setAddress(address);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    //     fetchVotes();
+    // }, [address]);
 
     const CallGetAddressStakedTrunkAmount = async () => {
         try {
@@ -365,80 +189,113 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         }
     }
 
-    const CallSetMaxStakeAmount = async () => {
-        try {
-            const result = await GetAddressStakedTrunkAmount(address);
-            setMaxStakedBalance( result );
-            const val = result / 1000;
-            setUnstakeValue( val.toString() );
+    function getVoteDataInModal() {
+        return (
+          <>
             
-        } catch (error) {
-            console.error("Failed to get stakers: ", error);
-        }
+            <div className="flex flex-row items-center justify-center space-x-2">
+
+                <div className="flex flex-col items-center justify-center space-x-2">
+                    <img src="Trunk_Logo_White.png" alt="Trunk Logo" className="w-12 h-12" />
+                </div>
+                
+                <div className="flex flex-col items-center justify-center space-x-2">
+                    <p className="text-white"> Staked: {maxStakedBalance} </p>
+                </div>
+                
+            </div>
+
+            <br/>
+                <div className="w-1/2 h-px bg-white mx-auto"></div>
+            <br/>
+                    
+            <div>
+            {voteData.map((item, index) => (
+                <div key={index} className='p-4 border border-gray rounded shadow-md w-full'>
+                    <p className='text-2xl mb-4'>Candidate #{index}</p>
+                    <a className='font-bold underline' href={`https://arweave.net/${item.tx}`} target="_blank" rel="noopener noreferrer">Memeframe URL</a>
+                    <p className='mt-4'>Yay: {item.yay / 1000}, Nay: {item.nay / 1000}</p>
+                    <p>Decided at block: {item.deadline}</p>
+                    {address ? (
+                        <div className='text-center mt-4'>
+                            <button onClick={() => vote(item.tx, "yay")} className="bg-[#9ECBFF] hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-4">
+                                Yay 
+                            </button>
+                            <button onClick={() => vote(item.tx, "nay")} className="bg-[#EF707E] hover:bg-red-400 text-white font-bold py-2 px-4 rounded">
+                                Nay 
+                            </button>
+                            <p className='text-sm my-2'>Your vote is cast with all the TRUNK you currently have staked.</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className='text-center my-4'>
+                                <button onClick={FetchAddress} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                    Connect 
+                                </button>
+                            </p>
+                        </div>
+                    )}
+                </div>
+            ))}
+            </div>
+          </>
+        );
+    }
+
+    function VoteModalRenderer() {
+        return (
+            <div className="flex flex-col items-center justify-center">
+                {voteData.length > 0 && address !== "" ? getVoteDataInModal() : <p> No votes available...</p>}
+            </div>
+        );
     }
 
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="p-4">
+    function DisconnectedRenderer() {
+        return (
+          <>
+            <div className="flex flex-col items-center justify-center"> Disconnected </div> 
+          </>
+        );
+    }
 
-        <div className="flex flex-col items-center justify-center">
-          {voteData.length > 0 ? getVoteDataInModal() : <p>No votes yet...</p>}
-
-          <br/>
-          <div className="w-1/2 h-px bg-white mx-auto"></div>
-          <br/>
-        </div>
-        
-        <div className="flex flex-col items-center justify-center">
-
-              <div className="flex flex-row items-center justify-center space-x-2">
-                <input
-                  type="text"
-                  name="stake"
-                  placeholder="Enter TRUNK to stake"
-                  value={stakeValue}
-                  onChange={handleInputChange}
-                  className="py-2 px-4 border rounded-md text-black"
-                />
-                <button className="text-white" onClick={setMaxBalance} > Max {maxTrunkBalance} </button>
-              </div>
-
-
-            <button
-                className="py-2 px-4 bg-[#9ECBFF] text-white rounded-md mt-2"
-                onClick={stake}
+    function LoadingRenderer() {
+        return (
+          <>
+            {/* <div 
+              ref={setContainerRef} 
+              className="w-full h-1/2 bg-transparent flex justify-center items-center mx-auto"
             >
-                Stake TRUNK
-            </button>
+              <canvas
+                ref={setCanvasRef}
+                className="w-full h-full bg-transparent block relative max-h-screen max-w-screen align-top"
+                aria-label="Dog haz coin?"
+              ></canvas>
+            </div> */}
+
+            <div className="flex flex-col items-center justify-center"> ... </div> 
+          </>
+        );
+    }
+
+    function MainRenderer() {
+        return (
+          <>
+            { address === "" ? DisconnectedRenderer() :  VoteModalRenderer() }
+          </>
+        );
+    }
+
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose}>
+        <div className="p-4">
+
+        { isLoading ? LoadingRenderer() : MainRenderer() }
+            
         </div>
-
-        <div className="flex flex-col items-center justify-center mt-4">
-              
-
-            <div className="flex flex-row items-center justify-center space-x-2">
-                <input
-                 type="text"
-                 name="unstake"
-                 placeholder="Enter TRUNK to unstake"
-                 value={unstakeValue}
-                 onChange={handleUnstakeInputChange}
-                 className="py-2 px-4 border rounded-md text-black"
-                  />
-                <button className="text-white" onClick={CallSetMaxStakeAmount} > Max </button>
-            </div>
-
-             <button
-               className="py-2 px-4 bg-[#EF707E] text-white rounded-md mt-2"
-               onClick={unstake}
-              >
-              Unstake TRUNK
-              </button>
-            </div>
-        
-      </div>
-    </Modal>
-  );
+        </Modal>
+    );
 };
 
 export default VoteModal;

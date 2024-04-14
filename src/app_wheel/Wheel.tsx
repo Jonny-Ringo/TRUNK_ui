@@ -10,14 +10,10 @@ import {
     EventType,
     RiveEventType
 } from "@rive-app/react-canvas";
-import Modal from './Modal';
 import VoteModal from './VoteModal';
-import Layout from './Layout';
-
-// import './style.css';
 import './extrastyle.css';
-// Wheel.tsx
 import { GetAddressStakedTrunkAmount } from './MiscTools';
+import StakeModal from './StakeModal';
 
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
@@ -56,9 +52,10 @@ function Wheel () {
 
     const [iframeSrc, setIframeSrc] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isStakeModalOpen, setIsStakeModalOpen] = useState(false);
 
     const [isConnected, setIsConnected] = useState(false);
-    const [address, setAddress] = useState('');
+    const [address, setAddress] = useState<string>('');
     const [voteData, setVoteData] = useState<VoteItem[]>([]);
     const [stakeValue, setStakeValue] = useState('');
     const [unstakeValue, setUnstakeValue] = useState('');
@@ -100,11 +97,29 @@ function Wheel () {
           const { data } = riveEvent;
         
           if (data.type === RiveEventType.General) {
-            // console.log("Event name", data.name);
+            console.log("Event name", data.name);
 
             if( data.name === "vote_event" ) {
               setIsModalOpen(true);
               // setTypedValue( "" +data.name );
+            } else if( data.name === "stake_event" ) {
+
+              // console.log( "Why isnt this able to get the address form the wallet?" );
+              // CheckAddress();
+
+              // if( address !== null && address !== "") {
+              //   console.log( "Address: " +address );
+              // } else  {
+                // console.log( address );
+              // }
+
+              // if( address !== "" ) {
+                setIsStakeModalOpen(true);
+              // } else  {
+              //   alert("Please connect your wallet first.");
+              // }
+
+              
             } else if( data.name === "wallet_click" ) {
               if( !isConnected ) {
                 fetchAddress();
@@ -146,47 +161,9 @@ function Wheel () {
   useEffect(() => {
     if(animWalletConnected) {
       animWalletConnected.value = isConnected;
-      // setTypedValue( "Wallet Connected" );
-
-      console.log("Wallet Connected: ", isConnected);
-
-      // Get max staked amount
-
-
-    } else {
-      // setTypedValue( "" );
-    }
+      }
   }, [isConnected]);
 
-  // useEffect(() => {
-  //   if(stateIndex) {
-  //     console.log("State Index: ", stateIndex.value);
-
-  //     if (stateIndex.value === 1) {
-  //       console.log("State Index reached 1");
-  //     }
-
-  //     if (stateIndex.value === 2) {
-  //       console.log("State Index reached 2");
-  //     }
-
-  //     if (stateIndex.value === 3) {
-  //       console.log("State Index reached 3");
-  //     }
-  //   }
-  // }, [stateIndex?.value]);
-
-    // useEffect(() => {
-    //   if (rive) {
-    //     rive.on(EventType.RiveEvent, onRiveEventReceived as any);
-    //   }
-      
-    //   return () => {
-    //     if (rive) {
-    //       rive.off(EventType.RiveEvent, onRiveEventReceived as any);
-    //     }
-    //   };
-    // }, [rive]);
 
     useEffect(() => {
         const getWebsite = async () => {
@@ -210,37 +187,46 @@ function Wheel () {
           const processResponse = await getWebsite();
           const url = `https://arweave.net/${processResponse}`;
           setIframeSrc(url);
+
+          checkConnected(); // fetchAddress();
         };
     
         setupIframe();
       }, []);
 
-      // Vote
-      function handleIsConnected() {
-        return (
-          <>
-            <div className="md:col-span-1 flex justify-center md:justify-end">
-              Welcome to Trunk {truncateAddress(address)}
-                <button onClick={disconnect} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                    Dissconnect 
-                </button>
-            </div>
-          </>
-        );
-      }
-    
-      function handleIsNotConnected() {
-        return (
-          <>
-            <div className="md:col-span-1 flex justify-center md:justify-end">
-                  <button onClick={fetchAddress} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                      Connect 
-                  </button>
-              </div>
-          </>
-        );
-      }
+      const checkConnected = async () => {
+        console.log("Fetching address...");
+        try {
+          // Check if ArConnect is available
+          if (window.arweaveWallet) {
+            try {
+              // Try to get permissions without prompting the user again if they're already connected
+              const currentPermissions = await window.arweaveWallet.getPermissions();
+              if (currentPermissions.includes('ACCESS_ADDRESS')) {
+                const address = await window.arweaveWallet.getActiveAddress();
+                console.log("Connected: ", address);
+                setAddress(address);
+                setIsConnected(true);
+              } else {
+                console.log("Not connected.");
+                setIsConnected(false);
+              }
+              
+            } catch (error) {
+              console.error("Error connecting to ArConnect:", error);
+              setIsConnected(false);
+            }
+          } else {
+            console.log("ArConnect not installed.");
+            setIsConnected(false);
+          }
+        } catch (error) {
+          console.error("Failed to fetch address:", error);
+          setIsConnected(false);
+        }
+      };
 
+      
       const truncateAddress = (address: string) => {
         if (address.length > 10) {
           return `${address.substring(0, 5)}...${address.substring(address.length - 5)}`;
@@ -286,78 +272,23 @@ function Wheel () {
           setIsConnected(false);
         }
       };
-
-      const getStakedTrunk = async () => {
-        try {
-            console.log("Getting stakers...");
-            const result = await dryrun({
-                process: TRUNK,
-                tags: [
-                    { name: 'Action', value: "Stakers" }
-                ]
-            });
-            if (result && result.Messages[0]) {
-                
-              try {
-                const allStakers = JSON.parse(result.Messages[0].Data);
-                // console.log("Parsed stakers: ", allStakers);
-
-                // // Getting the length of the entries
-                // const numberOfStakers = Object.keys(allStakers).length;
-                // console.log("Number of stakers: ", numberOfStakers);
-
-                // for (let key in allStakers) {
-                //     console.log("Staker ", key, " has staked ", allStakers[key].amount);
-                // }
-
-                // Find the connected wallet
-                for (let key in allStakers) {
-                  if( key === address ) {
-                    console.log("You have staked: ", allStakers[key].amount);
-                  }
-                }
-
-                return allStakers;
-              } catch (parseError) {
-                  console.error("Error parsing data: ", parseError);
-                  return "";
-              }
-
-                // return JSON.parse(result.Messages[0].Data);
-            } else {
-                console.log("No readable data from dryrun!");
-                return "";
-            }
-        } catch (e) {
-            console.log(e);
-            return "";
-        }
-    };
-
-    async function CallGetStakers() {
-      try {
-        const result = await GetAddressStakedTrunkAmount(address);
-        setAddressStakedTrunk( result );
-      } catch (error) {
-        console.error("Failed to get stakers: ", error);
-      }
-    }
       
     return (
       <div className='wheel'>
       <div className="min-h-screen bg-cover bg-center bg-repeat-x"
-      style={{ 
-         backgroundImage: `url('./app_wheel/background.png')`,
-         // backgroundSize: '50%, 100%' 
+        style={{ 
+          backgroundImage: `url('./app_wheel/background.png')`,
          }}>
 
           <div className="wrapper">
               <div className="typing-demo">
               Welcome to $TRUNK
               </div>
+              { truncateAddress(address) }
           </div>
 
           <VoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} address={address} />
+          <StakeModal isOpen={isStakeModalOpen} onClose={() => setIsStakeModalOpen(false)} address={address} />
 
             <div 
               ref={setContainerRef} 
@@ -366,7 +297,7 @@ function Wheel () {
               <canvas
                 ref={setCanvasRef}
                 className="w-full h-full bg-transparent block relative max-h-screen max-w-screen align-top"
-                aria-label="Hero element for the Explore page; an interactive graphic showing planets thru a spacesuit visor"
+                aria-label="Dog haz coin?"
               ></canvas>
             </div>
 
@@ -377,6 +308,8 @@ function Wheel () {
             </div>
             
         </div>
+
+        
         </div>
 	);
 }
