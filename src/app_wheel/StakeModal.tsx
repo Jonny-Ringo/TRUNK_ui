@@ -153,6 +153,22 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         }
     }
 
+    const CallGetMaxBalance = async () => {
+        try {     
+            const balance = await GetTrunkBalance( address );
+            setAmountToStake( balance.toString() );
+        } catch (error) {
+        }
+    }
+
+    const CallGetMaxStaked = async () => {
+      try {     
+          const balance = await GetAddressStakedTrunkAmount( address );
+          setAmountToUnstake( balance.toString() );
+      } catch (error) {
+      }
+  }
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAmountToStake(event.target.value);
     };
@@ -200,7 +216,7 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                 placeholder="Enter TRUNK to stake"
                 className="py-2 px-4 border rounded-md text-black"
                 />
-                <button className="text-white" > Max </button>
+                <button className="text-white" onClick={CallGetMaxBalance} > Max </button>
             </div>
 
 
@@ -224,7 +240,7 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                 placeholder="Enter TRUNK to unstake"
                 className="py-2 px-4 border rounded-md text-black"
                 />
-                <button className="text-white" > Max </button>
+                <button className="text-white" onClick={CallGetMaxStaked}> Max </button>
             </div>
 
             <button
