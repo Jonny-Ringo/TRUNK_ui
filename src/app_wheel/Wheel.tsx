@@ -14,6 +14,7 @@ import VoteModal from './VoteModal';
 import './extrastyle.css';
 import { GetAddressStakedTrunkAmount } from './MiscTools';
 import StakeModal from './StakeModal';
+import VoterModal from '../voter/VoterModal';
 
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
@@ -306,11 +307,11 @@ function Wheel () {
                   {typedValue}
                 </div>
             </div>
+
+            <VoterModal />
             
         </div>
-
-        
-        </div>
+      </div>
 	);
 }
 
