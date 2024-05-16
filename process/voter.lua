@@ -22,6 +22,7 @@ function GetNewID()
     return projectIdCounter
 end
 
+-- Send({ Target = ao.id, Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "", SiteURL = "testsite.io", IconURL = "icon.xyz", Stake = "1000", Owner = ao.id })
 -- Add Project Handler
 Handlers.add(
@@ -40,10 +41,20 @@ Handlers.add(
     "Get-Project",
     Handlers.utils.hasMatchingTag("Action", "Get-Project"),
     function (msg)
-        Send({Target = msg.id, Data = "Projects: " .. Projects})
-        Handlers.utils.reply("Projects: " .. Projects)(msg)
+        Send({ Target = msg.From, Data = Projects })
+        -- Handlers.utils.reply("Got All Projects " .. projectList)(msg)
     end
 )
+
+-- Testing Handler
+Handlers.add(
+    "Ping",
+    Handlers.utils.hasMatchingTag("Action", "Ping"),
+    function (msg)
+        Send({ Target = msg.From, Action = "Removed", Data = "PingyPongy" })
+    end
+)
+
 
 -- Vote Handler
 

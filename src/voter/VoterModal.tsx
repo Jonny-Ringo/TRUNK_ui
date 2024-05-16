@@ -10,15 +10,26 @@ const permissions: PermissionType[] = [
     'DISPATCH'
   ];
 
-  interface StakerInfo {
+interface StakerInfo {
     amount: string;
     unstake_at?: number;
 }
+
+interface ProjectInfo {
+    Name: string;
+    Icon: string;
+    SiteURL: string;
+    Stake: string;
+    Owner: string;
+}
+
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
 const VOTER = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4"
 
 function VoterModal () {
+
+    const [Projects, setProjects] = useState<ProjectInfo[]>([]);
 
     
     useEffect(() => {
@@ -61,13 +72,14 @@ function VoterModal () {
     const GetAllProjects = async () => {
         
         const GetAllProjects = async () => {
+            console.log("Getting all projects");
             try {
               const result = await dryrun({
                 process: VOTER,
-                tags: [{ name: 'Action', value: "Get-Projects" }]
+                tags: [{ name: 'Action', value: "Get-Project" }]
               });
               if (result) {
-                return result.Messages[0].Data;
+                    return result.Messages[0].Data;
               } else {
                 console.log("Got no response from dryrun!")
               }
@@ -78,13 +90,31 @@ function VoterModal () {
 
           const SortProjects = async () => {
             const processResponse = await GetAllProjects();
+            const projectsData: ProjectInfo[] = processResponse;
+            setProjects(projectsData);
+            
             // const json = JSON.parse(processResponse);
-            console.log("Projects: ", processResponse);
+            console.log("Projects: ", projectsData);
         };
     
         SortProjects();
 
     }
+
+    useEffect(() => {
+        GetAllProjects();
+    }, []);
+
+    useEffect(() => {
+        GetTopProject();
+    }, [Projects]);
+
+    const GetTopProject = () => {
+        if( Projects.length > 0 ) {
+            const topProject = Projects[0];
+            console.log("Top Project: ", topProject);
+        }
+    };
 
     // useEffect(() => {
 
@@ -116,8 +146,16 @@ function VoterModal () {
 
 
     return (
-        <div >
-            <button onClick={ ()=> { GetAllProjects(); } } >Get Stakers</button>
+        <div className="relative p-8 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10">
+            {Projects.length > 0 && (
+                <>
+                    <h2 id="projectName">{Projects[0].Name}</h2>
+                    <img id="projectIcon" src={Projects[0].Icon} alt="Project Icon" />
+                    <p id="projectSiteURL">{Projects[0].SiteURL}</p>
+                    <p id="projectStake">{Projects[0].Stake}</p>
+                    <p id="projectOwner">{Projects[0].Owner}</p>
+                </>
+            )}
         </div>
       );
   }
