@@ -2,6 +2,7 @@ import { dryrun, message, createDataItemSigner, result } from "@permaweb/aoconne
 import { PermissionType } from 'arconnect';
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
+const VOTER = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4";
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
@@ -24,6 +25,14 @@ interface StakerResult {
 interface Tag {
     name: string;
     value: string;
+}
+
+interface ProjectInfo {
+    Name: string;
+    IconURL: string;
+    SiteURL: string;
+    Stake: number;
+    Owner: string;
 }
 
 export const GetAddressStakedTrunkAmount = async (address: string): Promise<number> => {
@@ -196,4 +205,51 @@ export const FetchAddress = async () => {
     // } catch (error) {
     //     console.error(error);
     // }
+};
+
+// name, iconURL, siteURL, stake, owner
+export const SubmitNewProject = async (name: string, iconURL: string, siteURL: string, stake: string, owner: string ): Promise<string> => { 
+    console.log("Submiting New Project: " +name + " " + iconURL + " " + siteURL + " " + stake + " " + owner);
+    // return "winner!";
+    
+    // const value = parseInt(stake);
+    // const units = value * 1000;
+    // const trunkUnits = units.toString();
+
+    // console.log("Staking Value:", value);
+    // console.log("Units to Stake:", units);
+    // console.log("Request Payload:", trunkUnits);
+
+    try {
+        const getResult = await message({
+            process: VOTER,
+            tags: [
+                { name: 'Action', value: 'Add-Project' },
+                { name: 'Name', value: name },
+                { name: 'IconURL', value: iconURL },
+                { name: 'SiteURL', value: siteURL },
+                { name: 'Stake', value: stake },
+                { name: 'Owner', value: owner },
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        const { Messages, Error } = await result({
+            message: getResult,
+            process: VOTER,
+        });
+        if (Error) {
+            console.log("Error:" + Error);
+            return "Error:" + Error;
+        }
+        if (!Messages || Messages.length === 0) {
+            console.log("No messages were returned from ao. Please try later.");
+            return "No messages were returned from ao. Please try later."; 
+        }
+        console.log('Project added successfully!');
+        return "Success";
+    } catch (error) {
+        console.log('There was an error adding project: ' + error);
+        return "Error";
+    }
+
 };

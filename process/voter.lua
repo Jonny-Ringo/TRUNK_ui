@@ -29,8 +29,8 @@ Handlers.add(
     "Add-Project",
     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
     function (msg)
-      -- Add new project to the Projects table
         local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
+        print("New Project: " .. newProject.Name)
         table.insert(Projects, newProject)
         Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
     end

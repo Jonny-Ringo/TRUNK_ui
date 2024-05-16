@@ -3,6 +3,7 @@ import { dryrun, message, createDataItemSigner, result  } from "@permaweb/aoconn
 import { PermissionType } from 'arconnect';
 import { GetAddressStakedTrunkAmount, GetTrunkBalance, StakeTrunk, UnstakeTrunk, FetchAddress } from '../app_wheel/MiscTools';
 import ProjectsList from './ProjectsList';
+import AddProject from './AddProject';
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
@@ -24,13 +25,21 @@ interface ProjectInfo {
     Owner: string;
 }
 
+interface VoterModalProps {
+    address: string;
+}
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
 const VOTER = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4"
 
-function VoterModal () {
+const VoterModal: React.FC<VoterModalProps> = ({ address }) => {
 
     const [Projects, setProjects] = useState<ProjectInfo[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        console.log("VoterModal Address: ", address);
+    }, [address]);
 
     
     useEffect(() => {
@@ -150,6 +159,8 @@ function VoterModal () {
     return (
         <div className="relative p-8 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10">
             <ProjectsList Projects={Projects} />
+            <AddProject isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} address={address} />
+            <button className="bg-[#2F80ED] text-white rounded-lg p-2" onClick={() => setIsModalOpen(true)} >Add Project</button>
         </div>
       );
   }

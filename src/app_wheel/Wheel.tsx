@@ -15,7 +15,7 @@ import './extrastyle.css';
 import { GetAddressStakedTrunkAmount } from './MiscTools';
 import StakeModal from './StakeModal';
 import VoterModal from '../voter/VoterModal';
-
+import AddProject from '../voter/AddProject';
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
 const INITIAL_FRAME = "X5TgFGNgbje0JezztY5RL__VnYD9IieHa_9n9p0dMb0"
@@ -308,8 +308,10 @@ function Wheel () {
                 </div>
             </div>
 
-            <VoterModal />
-            
+            <VoterModal address={ address } />
+
+            {/* <AddProject isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> */}
+
         </div>
       </div>
 	);
