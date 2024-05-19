@@ -1,7 +1,7 @@
 import React, { useEffect, useState, FormEvent  } from 'react';
 import Modal from '../app_wheel/Modal';
 import Spinner from '../app_wheel/Spinner';
-import { SubmitNewProject } from '../app_wheel/MiscTools';
+import { SubmitNewProject, GetTrunkBalance } from '../app_wheel/MiscTools';
 
 interface AddProjectModalProps {
     isOpen: boolean;
@@ -95,6 +95,7 @@ interface AddProjectModalProps {
                     Submit
                 </button>
             </form>
+            
           </>
         );
     }
@@ -132,6 +133,12 @@ interface AddProjectModalProps {
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="p-4">
                 { isLoading ? LoadingRenderer() : MainRenderer() }
+
+                <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={ () => {GetTrunkBalance( address ); } }>
+                    Balance
+                </button>
+
             </div>
         </Modal>
         

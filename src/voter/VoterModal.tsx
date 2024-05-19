@@ -67,13 +67,13 @@ const VoterModal: React.FC<VoterModalProps> = ({ address }) => {
             const allStakers: { [key: string]: StakerInfo } = json;
             console.log("All Stakers: ", allStakers);
 
-            if (allStakers.hasOwnProperty("eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE")) {
-                console.log("You have staked: ", allStakers["eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"].amount);
-                return parseFloat(allStakers["eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"].amount) / 1000;
-            } else {
-                console.log("No staked amount found for the provided address.");
-                return 0;
-            }
+            // if (allStakers.hasOwnProperty("eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE")) {
+            //     console.log("You have staked: ", allStakers["eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"].amount);
+            //     return parseFloat(allStakers["eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"].amount) / 1000;
+            // } else {
+            //     console.log("No staked amount found for the provided address.");
+            //     return 0;
+            // }
         };
     
         setupIframe();

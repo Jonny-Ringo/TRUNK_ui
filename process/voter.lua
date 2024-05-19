@@ -29,12 +29,26 @@ Handlers.add(
     "Add-Project",
     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
     function (msg)
-        local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
-        print("New Project: " .. newProject.Name)
-        table.insert(Projects, newProject)
-        Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
+
+        local _balance = GetTrunkBalance( msg.Owner )
+        print("Balance: " .. _balance)
+        local balance_number = tonumber(_balance)
+
+        if( balance_number < 0.1 ) then
+            Handlers.utils.reply("Insufficient Balance")(msg)
+        else
+            local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
+            print("New Project: " .. newProject.Name)
+            -- table.insert(Projects, newProject)
+            Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
+        end
     end
 )
+
+function GetTrunkBalance( msg )
+    Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance", Recipient = msg.Owner})
+    return "0.1"
+end
 
 -- Send({ Target = ao.id, Action = "Get-Project" })
 Handlers.add(

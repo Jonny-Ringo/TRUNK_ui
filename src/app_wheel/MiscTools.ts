@@ -81,6 +81,7 @@ export const GetTrunkBalance = async (address: string): Promise<number> => {
             });
             const balanceTag = messageResponse.Messages[0].Tags.find((tag: Tag) => tag.name === 'Balance')
             const balance = balanceTag ? parseFloat((balanceTag.value / 1000).toFixed(4)) : 0;
+            console.log("Balance: ", balance);
             return balance;
 
         } catch (error) {
@@ -210,7 +211,6 @@ export const FetchAddress = async () => {
 // name, iconURL, siteURL, stake, owner
 export const SubmitNewProject = async (name: string, iconURL: string, siteURL: string, stake: string, owner: string ): Promise<string> => { 
     console.log("Submiting New Project: " +name + " " + iconURL + " " + siteURL + " " + stake + " " + owner);
-    // return "winner!";
     
     // const value = parseInt(stake);
     // const units = value * 1000;
@@ -219,6 +219,24 @@ export const SubmitNewProject = async (name: string, iconURL: string, siteURL: s
     // console.log("Staking Value:", value);
     // console.log("Units to Stake:", units);
     // console.log("Request Payload:", trunkUnits);
+
+    // -- Get TRUNK balance
+    // try {
+    //     const balance = await GetTrunkBalance(owner);
+    //     console.log("Owner Balance: ", balance);
+
+    //     if (balance > parseFloat("0.001")) {
+    //         console.log("Owner can add project");
+    //         return "Owner can add project";
+    //     } else {
+    //         console.log("Owner does not have enough balance to stake.");
+    //         return "Owner does not have enough balance to stake.";
+    //     }
+        
+    // } catch (error) {
+    //     console.log('There was an error adding project: ' + error);
+    //     return "Error";
+    // }
 
     try {
         const getResult = await message({
@@ -237,6 +255,48 @@ export const SubmitNewProject = async (name: string, iconURL: string, siteURL: s
             message: getResult,
             process: VOTER,
         });
+        if (Error) {
+            console.log("Error:" + Error);
+            return "Error:" + Error;
+        }
+        if (!Messages || Messages.length === 0) {
+            console.log("No messages were returned from ao. Please try later.");
+            return "No messages were returned from ao. Please try later."; 
+        }
+        console.log('Project added successfully!');
+        return "Success";
+    } catch (error) {
+        console.log('There was an error adding project: ' + error);
+        return "Error";
+    }
+
+};
+
+export const CheckOwnerBalance = async (amount: string, owner: string ): Promise<string> => { 
+    console.log("Checking Owner Balance: " + amount + " " + owner);
+    
+    // const value = parseInt(stake);
+    // const units = value * 1000;
+    // const trunkUnits = units.toString();
+
+    // console.log("Staking Value:", value);
+    // console.log("Units to Stake:", units);
+    // console.log("Request Payload:", trunkUnits);
+
+    try {
+        const getBalance = await message({
+            process: owner,
+            tags: [
+                { name: 'Target', value: 'OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww' },
+                { name: 'Action ', value: "Balance" },
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        const { Messages, Error } = await result({
+            message: getBalance,
+            process: owner,
+        });
+
         if (Error) {
             console.log("Error:" + Error);
             return "Error:" + Error;
