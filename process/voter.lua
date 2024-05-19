@@ -25,28 +25,50 @@ end
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "", SiteURL = "testsite.io", IconURL = "icon.xyz", Stake = "1000", Owner = ao.id })
 -- Add Project Handler
+-- Handlers.add(
+--     "Add-Project",
+--     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
+--     function (msg)
+
+--         Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance"})
+        
+--         local _balance = msg.Data
+--         print("Balance: " .. _balance)
+        
+--         local balance_number = tonumber(_balance)
+
+--         if( balance_number < 0.1 ) then
+--             Handlers.utils.reply("Insufficient Balance")(msg)
+--         else
+--             local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
+--             print("New Project: " .. newProject.Name)
+--             -- table.insert(Projects, newProject)
+--             Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
+--         end
+--     end
+-- )
+
 Handlers.add(
     "Add-Project",
     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
     function (msg)
+    end
+)
 
-        local _balance = GetTrunkBalance( msg.Owner )
-        print("Balance: " .. _balance)
-        local balance_number = tonumber(_balance)
-
-        if( balance_number < 0.1 ) then
-            Handlers.utils.reply("Insufficient Balance")(msg)
-        else
-            local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
-            print("New Project: " .. newProject.Name)
-            -- table.insert(Projects, newProject)
-            Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
-        end
+Handlers.add(
+    "Balance-Response",
+    Handlers.utils.hasMatchingTag("Action", "Balance-Response"),
+    function(msg)
+        CurrentBalance = msg.Tags.Balance
+        print("Balance updated: " .. CurrentBalance)
     end
 )
 
 function GetTrunkBalance( msg )
-    Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance", Recipient = msg.Owner})
+    Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance", Recipient = msg.Owner, 
+    Tags = { 
+        Response = "Balance-Response"
+     }})
     return "0.1"
 end
 
