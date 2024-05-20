@@ -237,8 +237,11 @@ export const SubmitNewProject = async (name: string, iconURL: string, siteURL: s
     //     console.log('There was an error adding project: ' + error);
     //     return "Error";
     // }
+    
 
     try {
+
+        // Send the project objects
         const getResult = await message({
             process: VOTER,
             tags: [
@@ -312,4 +315,63 @@ export const CheckOwnerBalance = async (amount: string, owner: string ): Promise
         return "Error";
     }
 
+};
+
+export const SendTrunk = async (amount: string, sender : string, recipient : string): Promise<string> => { 
+
+    console.log("Sending Trunk: " + amount + " Sender:" + sender + " Recipient:" + recipient);
+
+    const value = parseInt(amount);
+    const units = value * 1000;
+    const trunkUnits = units.toString();
+    console.log("Send Value:", value);
+    console.log("Units to Send:", units);
+    console.log("Send Payload:", trunkUnits);
+
+    //Send({ Target = "Sa0iBLPNyJQrwpTTG-tWLQU-1QeUAJA73DdxGGiKoJc", Action = "Transfer", Quantity = "300000", Recipient = "eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE" })
+
+    // Send 0.001 TRUNK
+    // const sendTrunk = await message({
+    //     process: owner,
+    //     tags: [
+    //         { name: 'Action', value: 'Transfer' },
+    //         { name: 'Quantity', value: "0.001" },
+    //         { name: 'Recipient', value: VOTER },
+    //     ],
+    //     signer: createDataItemSigner(window.arweaveWallet),
+    // });
+    // const { mess, err } = await result({
+    //     message: sendTrunk,
+    //     process: VOTER,
+    // });
+
+    try {
+        const sendTrunk = await message({
+            process: TRUNK,
+            tags: [
+                { name: 'Action', value: 'Transfer' },
+                { name: 'Recipient', value: recipient },
+                { name: 'Quantity', value: amount },
+                
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        const { Messages, Error } = await result({
+            message: sendTrunk,
+            process: TRUNK,
+        });
+        if (Error) {
+            return "Error sending:" + Error;
+        }
+        if (!Messages || Messages.length === 0) {
+            return "No messages were returned from ao. Please try later."; 
+        }
+        const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
+        if (actionTag.value === "Debit-Notice") {
+            console.log("Debit-Notice: ", actionTag.value);
+        }
+        return "Success"; //Messages[0].tx;
+    } catch (error) {
+        return "Error";
+    }
 };

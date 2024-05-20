@@ -1,4 +1,5 @@
 Projects = Projects or {}
+ProjectStakers = ProjectStakers or {}
 
 local projectIdCounter = 0
 
@@ -20,6 +21,13 @@ end
 function GetNewID()
     projectIdCounter = projectIdCounter + 1
     return projectIdCounter
+end
+
+function InitNewProjectStaker( owner, stakeAmount )
+    return {
+        Owner = owner,
+        Stake = stakeAmount
+    }
 end
 
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
@@ -88,6 +96,20 @@ Handlers.add(
     Handlers.utils.hasMatchingTag("Action", "Ping"),
     function (msg)
         Send({ Target = msg.From, Action = "Removed", Data = "PingyPongy" })
+    end
+)
+
+-- Got Some Trunk
+Handlers.add(
+    "Credit-Notice",
+    Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
+    function (msg)
+
+        local newStaker = InitNewProjectStaker(msg.Owner, msg.Quantity)
+        table.insert(ProjectStakers, newStaker)
+        
+        print("Got some trunk: " .. msg.Quantity)
+        Handlers.utils.reply("Got some trunk")(msg)
     end
 )
 
