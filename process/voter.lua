@@ -1,7 +1,7 @@
 Projects = Projects or {}
 ProjectStakers = ProjectStakers or {}
 
-local projectIdCounter = 0
+ProjectIdCounter = ProjectIdCounter or 0
 
 -- aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
 -- .load ./process/voter.lua
@@ -19,8 +19,8 @@ function InitNewProject(name, siteURL, iconURL, stakeAmount, owner)
 end
 
 function GetNewID()
-    projectIdCounter = projectIdCounter + 1
-    return projectIdCounter
+    ProjectIdCounter = ProjectIdCounter + 1
+    return ProjectIdCounter
 end
 
 function InitNewProjectStaker( owner, stakeAmount )
@@ -33,35 +33,34 @@ end
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "", SiteURL = "testsite.io", IconURL = "icon.xyz", Stake = "1000", Owner = ao.id })
 -- Add Project Handler
--- Handlers.add(
---     "Add-Project",
---     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
---     function (msg)
-
---         Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance"})
-        
---         local _balance = msg.Data
---         print("Balance: " .. _balance)
-        
---         local balance_number = tonumber(_balance)
-
---         if( balance_number < 0.1 ) then
---             Handlers.utils.reply("Insufficient Balance")(msg)
---         else
---             local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
---             print("New Project: " .. newProject.Name)
---             -- table.insert(Projects, newProject)
---             Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
---         end
---     end
--- )
-
 Handlers.add(
     "Add-Project",
     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
     function (msg)
+
+        local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
+        print("New Project: " .. newProject.Name)
+        table.insert(Projects, newProject)
+        Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
+
+        -- Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance"})
+        
+        -- local _balance = msg.Data
+        -- print("Balance: " .. _balance)
+        
+        -- local balance_number = tonumber(_balance)
+
+        -- if( balance_number < 0.1 ) then
+        --     Handlers.utils.reply("Insufficient Balance")(msg)
+        -- else
+        --     local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
+        --     print("New Project: " .. newProject.Name)
+        --     -- table.insert(Projects, newProject)
+        --     Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
+        -- end
     end
 )
+
 
 Handlers.add(
     "Balance-Response",
@@ -85,8 +84,9 @@ Handlers.add(
     "Get-Project",
     Handlers.utils.hasMatchingTag("Action", "Get-Project"),
     function (msg)
-        Send({ Target = msg.From, Data = Projects })
-        -- Handlers.utils.reply("Got All Projects " .. projectList)(msg)
+        -- Send({ Target = msg.From, Data = Projects })
+        print("Projects " .. Projects)
+        -- Handlers.utils.reply("All Projects " .. Projects)(msg)
     end
 )
 
@@ -105,7 +105,7 @@ Handlers.add(
     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
     function (msg)
 
-        local newStaker = InitNewProjectStaker(msg.Owner, msg.Quantity)
+        local newStaker = InitNewProjectStaker(msg.Sender, msg.Quantity)
         table.insert(ProjectStakers, newStaker)
         
         print("Got some trunk: " .. msg.Quantity)

@@ -1,5 +1,6 @@
 import { dryrun, message, createDataItemSigner, result } from "@permaweb/aoconnect";
 import { PermissionType } from 'arconnect';
+import { send } from "process";
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
 const VOTER = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4";
@@ -238,40 +239,50 @@ export const SubmitNewProject = async (name: string, iconURL: string, siteURL: s
     //     return "Error";
     // }
     
+    const stakeResult = await SendTrunk( "10", owner, "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4" );
+    console.log("Stake Result: " + stakeResult);
 
-    try {
+    if(stakeResult === "Success") {
 
-        // Send the project objects
-        const getResult = await message({
-            process: VOTER,
-            tags: [
-                { name: 'Action', value: 'Add-Project' },
-                { name: 'Name', value: name },
-                { name: 'IconURL', value: iconURL },
-                { name: 'SiteURL', value: siteURL },
-                { name: 'Stake', value: stake },
-                { name: 'Owner', value: owner },
-            ],
-            signer: createDataItemSigner(window.arweaveWallet),
-        });
-        const { Messages, Error } = await result({
-            message: getResult,
-            process: VOTER,
-        });
-        if (Error) {
-            console.log("Error:" + Error);
-            return "Error:" + Error;
+        try {
+
+            // Send the project objects
+            const getResult = await message({
+                process: VOTER,
+                tags: [
+                    { name: 'Action', value: 'Add-Project' },
+                    { name: 'Name', value: name },
+                    { name: 'IconURL', value: iconURL },
+                    { name: 'SiteURL', value: siteURL },
+                    { name: 'Stake', value: stake },
+                    { name: 'Owner', value: owner },
+                ],
+                signer: createDataItemSigner(window.arweaveWallet),
+            });
+            const { Messages, Error } = await result({
+                message: getResult,
+                process: VOTER,
+            });
+            if (Error) {
+                console.log("Error:" + Error);
+                return "Error:" + Error;
+            }
+            if (!Messages || Messages.length === 0) {
+                console.log("No messages were returned from ao. Please try later.");
+                return "No messages were returned from ao. Please try later."; 
+            }
+            console.log('Project added successfully!');
+            return "Success";
+        } catch (error) {
+            console.log('There was an error adding project: ' + error);
+            return "Error";
         }
-        if (!Messages || Messages.length === 0) {
-            console.log("No messages were returned from ao. Please try later.");
-            return "No messages were returned from ao. Please try later."; 
-        }
-        console.log('Project added successfully!');
-        return "Success";
-    } catch (error) {
-        console.log('There was an error adding project: ' + error);
-        return "Error";
+
+    } else {
+        console.log("Error Staking: " + stakeResult);
+        return "Error Staking: " + stakeResult;
     }
+   
 
 };
 
@@ -352,6 +363,7 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
                 { name: 'Action', value: 'Transfer' },
                 { name: 'Recipient', value: recipient },
                 { name: 'Quantity', value: amount },
+                { name: 'Sender', value: sender },
                 
             ],
             signer: createDataItemSigner(window.arweaveWallet),
@@ -368,6 +380,39 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
         }
         const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
         if (actionTag.value === "Debit-Notice") {
+            console.log("Debit-Notice: ", actionTag.value);
+            console.log("From: ", Messages[0].Target);
+        }
+        return "Success"; //Messages[0].tx;
+    } catch (error) {
+        return "Error";
+    }
+};
+
+// Send({ Target = ao.id, Action = "Get-Project" })
+export const GetProjects = async () => { 
+    console.log("GetProjects...");
+    try {
+        const getProjects = await message({
+            process: VOTER,
+            tags: [
+                { name: 'Action', value: 'Get-Project' },
+                
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        const { Messages, Error } = await result({
+            message: getProjects,
+            process: VOTER,
+        });
+        if (Error) {
+            return "Error sending:" + Error;
+        }
+        if (!Messages || Messages.length === 0) {
+            return "No messages were returned from ao. Please try later."; 
+        }
+        const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
+        if (actionTag.value === "Get-Project") {
             console.log("Debit-Notice: ", actionTag.value);
         }
         return "Success"; //Messages[0].tx;

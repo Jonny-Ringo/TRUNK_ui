@@ -1,7 +1,7 @@
 import React, { useEffect, useState, FormEvent  } from 'react';
 import Modal from '../app_wheel/Modal';
 import Spinner from '../app_wheel/Spinner';
-import { SubmitNewProject, GetTrunkBalance, SendTrunk } from '../app_wheel/MiscTools';
+import { SubmitNewProject, GetTrunkBalance, SendTrunk, GetProjects } from '../app_wheel/MiscTools';
 
 interface AddProjectModalProps {
     isOpen: boolean;
@@ -137,6 +137,11 @@ interface AddProjectModalProps {
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={ () => {SendTrunk( "10", address, "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4" ); } }>
                     Send 1 TRUNK
+                </button>
+
+                <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={ () => {GetProjects(); } }>
+                    Get-Projects
                 </button>
 
             </div>
