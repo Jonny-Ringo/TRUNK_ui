@@ -99,7 +99,7 @@ const VoterModal: React.FC<VoterModalProps> = ({ address }) => {
           };
 
           const SortProjects = async () => {
-            const processResponse = await GetAllProjects();
+            const processResponse = await GetAllProjects(); console.log("Process Response: ", processResponse);
             const projectsData: ProjectInfo[] = processResponse;
             setProjects(projectsData);
             

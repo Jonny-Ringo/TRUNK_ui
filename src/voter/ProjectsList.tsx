@@ -24,7 +24,8 @@ function ProjectsList ( { Projects }: ProjectsListProps ) {
         <div >
             
             <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
-                {Projects.length > 0 && Projects.map((project, index) => (
+            {Array.isArray(Projects) && Projects.length > 0 ? (
+                Projects.map((project, index) => (
                     <li key={index} className="pt-3 pb-3 sm:pt-4 sm:pb-4">
                         <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">
                             <div className="flex items-center space-x-4 rtl:space-x-reverse">
@@ -40,13 +41,18 @@ function ProjectsList ( { Projects }: ProjectsListProps ) {
                                     </p>
                                 </div>
                                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                    #{index +1}
+                                    #{index + 1}
                                 </div>
                             </div>
                         </a>
                     </li>
-                ))}
-            </ul>
+                ))
+            ) : (
+                <li className="pt-3 pb-3 sm:pt-4 sm:pb-4 text-gray-500 dark:text-gray-400">
+                    No projects available
+                </li>
+            )}
+        </ul>
             
         </div>
       );

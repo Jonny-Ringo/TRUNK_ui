@@ -255,7 +255,7 @@ export const SubmitNewProject = async (name: string, iconURL: string, siteURL: s
                     { name: 'IconURL', value: iconURL },
                     { name: 'SiteURL', value: siteURL },
                     { name: 'Stake', value: stake },
-                    { name: 'Owner', value: owner },
+                    { name: 'ProjectOwner', value: owner },
                 ],
                 signer: createDataItemSigner(window.arweaveWallet),
             });
