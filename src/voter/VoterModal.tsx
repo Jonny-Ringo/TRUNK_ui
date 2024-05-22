@@ -37,9 +37,16 @@ const VoterModal: React.FC<VoterModalProps> = ({ address }) => {
     const [Projects, setProjects] = useState<ProjectInfo[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [userAddress, setUserAddress] = useState(""); 
+
     useEffect(() => {
         console.log("VoterModal Address: ", address);
+        setUserAddress(address);
     }, [address]);
+
+    useEffect(() => {
+      console.log("userAddress: ", userAddress);
+  }, [userAddress]);
 
     
     useEffect(() => {
@@ -120,12 +127,15 @@ const VoterModal: React.FC<VoterModalProps> = ({ address }) => {
         console.log("Projects: ", Projects);
     }, [Projects]);
 
-    const GetTopProject = () => {
+    const GetTopProject = ( ) => {
         if( Projects.length > 0 ) {
             const topProject = Projects[0];
             console.log("Top Project: ", topProject);
         }
     };
+
+
+
 
     // useEffect(() => {
 
@@ -158,9 +168,12 @@ const VoterModal: React.FC<VoterModalProps> = ({ address }) => {
 
     return (
         <div className="relative p-8 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10">
-            <ProjectsList Projects={Projects} />
+            <ProjectsList Projects={Projects} address={address} />
+
             <AddProject isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} address={address} />
-            <button className="bg-[#2F80ED] text-white rounded-lg p-2" onClick={() => setIsModalOpen(true)} >Add Project</button>
+            
+            <button className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+             onClick={() => setIsModalOpen(true)} >Add Project</button>
         </div>
       );
   }

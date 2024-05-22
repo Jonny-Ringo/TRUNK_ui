@@ -28,7 +28,9 @@ interface AddProjectModalProps {
 
     useEffect(() => {
         if(!isOpen) {
+            
         } else {
+            console.log("Address: " + address);
         }
     }, [isOpen]);
     
