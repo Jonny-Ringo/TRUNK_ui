@@ -130,6 +130,31 @@ interface AddProjectModalProps {
         );
     }
 
+    // function StakeRenderer() {
+    //     return (
+    //       <>
+    //        <form onSubmit={handleSubmit}>
+                
+    //             <div className="mb-4">
+    //                 <label htmlFor="stake" className="block text-sm font-medium text-white-700">Stake</label>
+    //                 <input
+    //                     type="text"
+    //                     id="stake"
+    //                     value={stake}
+    //                     onChange={e => setStake(e.target.value)}
+    //                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-black shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+    //                 />
+    //             </div>
+
+    //             <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    //                 Stake
+    //             </button>
+    //         </form>
+            
+    //       </>
+    //     );
+    // }
+
     return (
         
         <Modal isOpen={isOpen} onClose={onClose}>

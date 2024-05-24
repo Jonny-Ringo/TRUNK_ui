@@ -1,10 +1,13 @@
 Projects = Projects or {}
 ProjectStakers = ProjectStakers or {}
+Upvotes = Upvotes or {}
+Downvotes = Downvotes or {}
 
 ProjectIdCounter = ProjectIdCounter or 0
 
 -- aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
 -- .load ./process/voter.lua
+-- Must add "CronTick" handler for cron to work
 
 function InitNewProject(name, siteURL, iconURL, stakeAmount, owner)
     return {
@@ -30,13 +33,64 @@ function InitNewProjectStaker( owner, stakeAmount )
     }
 end
 
--- Send({ Target = ao.id, Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
+function NewUpVote( projectID, voter, stake )
+    return {
+        ProjectID = projectID;
+        Voter = voter;
+        Stake = stake;
+        -- block
+    }
+end
+
+
+function CheckForStaker(msg)
+    local _found = "false"
+    -- print("Looking for staker: " .. msg.From)
+
+    for i, staker in ipairs(ProjectStakers) do
+        print("Checking Staker: " .. staker.Owner .. " vs " .. msg.From)
+        if staker.Owner == msg.From then
+            _found = "true"
+            print("Staker Found: " .. staker.Owner .. "-" .. staker.Stake)
+        end
+    end
+
+    return _found
+end
+
+function GetStaker(msg)
+    for _, staker in ipairs(ProjectStakers) do
+        if staker.Owner == msg.From then
+            return staker
+        end
+    end
+    return nil
+end
+
+-- Send({ Target = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4", Action = "Check-Staker" })
+Handlers.add(
+    "Check-Staker",
+    Handlers.utils.hasMatchingTag("Action", "Check-Staker"),
+    function (msg)
+
+        -- print("Check-Staker " .. msg.From)
+
+        local _found = CheckForStaker(msg)
+        -- Handlers.utils.reply("Result: " .. _found)(msg)
+        local message = "Result: " .. _found
+        Send({ Target = msg.From, Data = message })
+    end
+)
+
+-- Send({ Target = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4", Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "", SiteURL = "testsite.io", IconURL = "icon.xyz", Stake = "1000", Owner = ao.id })
 -- Add Project Handler
 Handlers.add(
     "Add-Project",
     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
     function (msg)
+
+        
 
         local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.ProjectOwner)
         print("New Project: " .. newProject.Name)
@@ -99,26 +153,66 @@ Handlers.add(
     end
 )
 
--- Got Some Trunk
+-- Get Staked Balance
+Handlers.add(
+    "Get-Staked-Balance",
+    Handlers.utils.hasMatchingTag("Action", "Get-Staked-Balance"),
+    function (msg)
+        local staker = GetStaker(msg)
+
+        if not staker then
+            local message = "No Stake Found"
+            Send({ Target = msg.From, Action = "Removed", Data = message })
+        else
+            local message = "Stake: " .. staker.Stake
+            Send({ Target = msg.From, Action = "Removed", Data = message })
+        end
+    end
+)
+
+-- -- Got Some Trunk
+-- Handlers.add(
+--     "Credit-Notice",
+--     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
+--     function (msg)
+
+--         local newStaker = InitNewProjectStaker(msg.Sender, msg.Quantity)
+--         table.insert(ProjectStakers, newStaker)
+        
+--         print("Got some trunk: " .. msg.Quantity)
+--         Handlers.utils.reply("Got some trunk")(msg)
+--     end
+-- )
+
+-- -- Got Some Trunk
 Handlers.add(
     "Credit-Notice",
     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
     function (msg)
+        -- Function to check if a sender is already in the ProjectStakers
+        local function isSenderInProjectStakers(sender)
+            for _, staker in ipairs(ProjectStakers) do
+                if staker.Owner == sender then
+                    return staker
+                end
+            end
+            return nil
+        end
 
-        local newStaker = InitNewProjectStaker(msg.Sender, msg.Quantity)
-        table.insert(ProjectStakers, newStaker)
-        
-        print("Got some trunk: " .. msg.Quantity)
-        Handlers.utils.reply("Got some trunk")(msg)
+        -- Check if the sender is already in the ProjectStakers
+        local existingStaker = isSenderInProjectStakers(msg.From)
+        if not existingStaker then
+            local newStaker = InitNewProjectStaker(msg.From, msg.Quantity)
+            table.insert(ProjectStakers, newStaker)
+            print("Got some trunk: " .. msg.Quantity)
+            Handlers.utils.reply("Got some trunk")(msg)
+        else
+            existingStaker.Stake = existingStaker.Stake + msg.Quantity
+            print("Updated staker " .. msg.From .. " with new quantity: " .. existingStaker.Stake)
+            Handlers.utils.reply("Your stake has been updated.")(msg)
+        end
     end
 )
-
-
--- Vote Handler
-
--- Remove Votes Handler
-
--- Must add "CronTick" handler for cron to work
 
 -- Remove Project By Admin Handler (make sure its this ao process)
 Handlers.add(
@@ -174,3 +268,28 @@ Handlers.add(
         end
     end
 )
+
+
+-- Voting Handler
+Handlers.add(
+    "Up-Vote",
+    Handlers.utils.hasMatchingTag("Action", "Up-Vote"),
+    function (msg)
+        local newVote = NewUpVote( msg.ProjectID, msg.From, msg.Quantity)
+        table.insert(Upvotes, newVote)
+        Handlers.utils.reply("Up-Vote Added")(msg)
+    end
+)
+
+-- Remove Votes Handler
+
+
+
+-- .------.------.------.------.------.------.------.
+-- |F.--. |U.--. |D.--. |B.--. |E.--. |A.--. |R.--. |
+-- | :(): | (\/) | :/\: | :(): | (\/) | (\/) | :(): |
+-- | ()() | :\/: | (__) | ()() | :\/: | :\/: | ()() |
+-- | '--'F| '--'U| '--'D| '--'B| '--'E| '--'A| '--'R|
+-- `------`------`------`------`------`------`------'
+-- -----------------King of the FUD-----------------
+-- .------.------.------.------.------.------.------.
