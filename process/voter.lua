@@ -9,6 +9,9 @@ ProjectIdCounter = ProjectIdCounter or 0
 -- .load ./process/voter.lua
 -- Must add "CronTick" handler for cron to work
 
+-- Send TRUNK to voter wallet
+-- Send({ Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Transfer", Quantity = "10", Recipient = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4", Sender = ao.id })
+
 function InitNewProject(name, siteURL, iconURL, stakeAmount, owner)
     return {
         Name = name,
@@ -83,35 +86,30 @@ Handlers.add(
 )
 
 -- Send({ Target = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4", Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
--- Send({ Target = ao.id, Action = "Add-Project", Name = "", SiteURL = "testsite.io", IconURL = "icon.xyz", Stake = "1000", Owner = ao.id })
 -- Add Project Handler
 Handlers.add(
     "Add-Project",
     Handlers.utils.hasMatchingTag("Action", "Add-Project"),
     function (msg)
 
-        
+        -- Check if the sender is in the ProjectStakers
+        local staker = GetStaker(msg)
 
-        local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.ProjectOwner)
-        print("New Project: " .. newProject.Name)
-        table.insert(Projects, newProject)
-        Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
+        if not staker then
+            local message = "You may not add a Project without staking first."
+            Handlers.utils.reply(message)(msg)
+        else
+            
+            -- need to check how much TRUNK is staked
 
-        -- Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance"})
-        
-        -- local _balance = msg.Data
-        -- print("Balance: " .. _balance)
-        
-        -- local balance_number = tonumber(_balance)
+            -- local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.ProjectOwner)
+            -- print("New Project: " .. newProject.Name)
+            -- table.insert(Projects, newProject)
+            -- Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
 
-        -- if( balance_number < 0.1 ) then
-        --     Handlers.utils.reply("Insufficient Balance")(msg)
-        -- else
-        --     local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
-        --     print("New Project: " .. newProject.Name)
-        --     -- table.insert(Projects, newProject)
-        --     Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
-        -- end
+            local message = "You may add a project: " .. staker.Stake
+            Handlers.utils.reply(message)(msg)
+        end
     end
 )
 
@@ -154,6 +152,7 @@ Handlers.add(
 )
 
 -- Get Staked Balance
+-- Send({ Target = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4", Action = "Get-Staked-Balance" })
 Handlers.add(
     "Get-Staked-Balance",
     Handlers.utils.hasMatchingTag("Action", "Get-Staked-Balance"),
@@ -162,29 +161,15 @@ Handlers.add(
 
         if not staker then
             local message = "No Stake Found"
-            Send({ Target = msg.From, Action = "Removed", Data = message })
+            Handlers.utils.reply(message)(msg)
         else
             local message = "Stake: " .. staker.Stake
-            Send({ Target = msg.From, Action = "Removed", Data = message })
+            Handlers.utils.reply(message)(msg)
         end
     end
 )
 
--- -- Got Some Trunk
--- Handlers.add(
---     "Credit-Notice",
---     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
---     function (msg)
-
---         local newStaker = InitNewProjectStaker(msg.Sender, msg.Quantity)
---         table.insert(ProjectStakers, newStaker)
-        
---         print("Got some trunk: " .. msg.Quantity)
---         Handlers.utils.reply("Got some trunk")(msg)
---     end
--- )
-
--- -- Got Some Trunk
+-- Someone sent TRUNK to stake
 Handlers.add(
     "Credit-Notice",
     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
@@ -200,15 +185,15 @@ Handlers.add(
         end
 
         -- Check if the sender is already in the ProjectStakers
-        local existingStaker = isSenderInProjectStakers(msg.From)
+        local existingStaker = isSenderInProjectStakers(msg.Sender)
         if not existingStaker then
-            local newStaker = InitNewProjectStaker(msg.From, msg.Quantity)
+            local newStaker = InitNewProjectStaker(msg.Sender, tonumber(msg.Quantity) )
             table.insert(ProjectStakers, newStaker)
             print("Got some trunk: " .. msg.Quantity)
             Handlers.utils.reply("Got some trunk")(msg)
         else
             existingStaker.Stake = existingStaker.Stake + msg.Quantity
-            print("Updated staker " .. msg.From .. " with new quantity: " .. existingStaker.Stake)
+            print("Updated staker " .. msg.Sender .. " with new quantity: " .. existingStaker.Stake)
             Handlers.utils.reply("Your stake has been updated.")(msg)
         end
     end
@@ -291,5 +276,5 @@ Handlers.add(
 -- | ()() | :\/: | (__) | ()() | :\/: | :\/: | ()() |
 -- | '--'F| '--'U| '--'D| '--'B| '--'E| '--'A| '--'R|
 -- `------`------`------`------`------`------`------'
--- -----------------King of the FUD-----------------
+-- -----------------King of teh FUD-----------------
 -- .------.------.------.------.------.------.------.
