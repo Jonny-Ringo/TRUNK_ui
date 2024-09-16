@@ -10,7 +10,7 @@ ProjectIdCounter = ProjectIdCounter or 0
 -- Must add "CronTick" handler for cron to work
 
 -- Send TRUNK to voter wallet
--- Send({ Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Transfer", Quantity = "10", Recipient = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4", Sender = ao.id })
+-- Send({ Target = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action = "Transfer", Quantity = "10", Recipient = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4", Sender = ao.id })
 
 function InitNewProject(name, siteURL, iconURL, stakeAmount, owner)
     return {
@@ -124,7 +124,7 @@ Handlers.add(
 )
 
 function GetTrunkBalance( msg )
-    Send({Target = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww", Action = "Balance", Recipient = msg.Owner, 
+    Send({Target = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action = "Balance", Recipient = msg.Owner, 
     Tags = { 
         Response = "Balance-Response"
      }})
@@ -240,7 +240,7 @@ Handlers.add(
     "Remove-Project",
     Handlers.utils.hasMatchingTag("Action", "Remove-Project"),
     function (msg)
-        if msg.Owner == "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww" then
+        if msg.Owner == "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ" then
             for i, project in ipairs(Projects) do
                 if project.ID == msg.ID then
                     table.remove(Projects, i)
