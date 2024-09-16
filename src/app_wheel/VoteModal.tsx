@@ -6,7 +6,7 @@ import { GetAddressStakedTrunkAmount, FetchAddress } from './MiscTools';
 import { useRive } from "@rive-app/react-canvas";
 import Spinner from './Spinner';
 
-const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
+const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
