@@ -17,8 +17,8 @@ import StakeModal from './StakeModal';
 import VoterModal from '../voter/VoterModal';
 import AddProject from '../voter/AddProject';
 
-const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
-const INITIAL_FRAME = "X5TgFGNgbje0JezztY5RL__VnYD9IieHa_9n9p0dMb0"
+const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"
+const INITIAL_FRAME = "nOXJjj_vk0Dc1yCgdWD8kti_1iHruGzLQLNNBHVpN0Y"
 
 const permissions: PermissionType[] = [
   'ACCESS_ADDRESS',
