@@ -23,8 +23,8 @@ interface Tag {
 function Trunk() {
     const [address, setAddress] = useState('')
     const [trunkBalance, setTrunkBalance] = useState(0)
-    const [credBalance, setCredBalance] = useState(0)
-    const [credValue, setCredValue] = useState('')
+    const [warBalance, setwARBalance] = useState(0)
+    const [warValue, setwARValue] = useState('')
     const [stakeValue, setStakeValue] = useState('')
     const [swapSuccess, setSwapSuccess] = useState(false)
     const [stakeSuccess, setStakeSuccess] = useState(false)
@@ -37,7 +37,7 @@ function Trunk() {
                 setStakeValue(value);
                 break;
             case "swap":
-                setCredValue(value);
+                setwARValue(value);
                 break;
             default:
                 break;
@@ -49,7 +49,7 @@ function Trunk() {
             permissions,
             {
                 name: "TRUNK",
-                logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
+                logo: "hqg-Em9DdYHYmMysyVi8LuTGF8IF_F7ZacgjYiSpj0k"
             }
         )
         try {
@@ -61,23 +61,23 @@ function Trunk() {
     }
 
     const swap = async () => {
-        var value = parseInt(credValue)
+        var value = parseInt(warValue)
         var units = value * 1000
-        var credUnits = units.toString()
+        var warUnits = units.toString()
         try {
             const getSwapMessage = await message({
-                process: CRED,
+                process: wAR,
                 tags: [
                     { name: 'Action', value: 'Transfer' },
                     { name: 'Recipient', value: TRUNK },
-                    { name: 'Quantity', value: credUnits }
+                    { name: 'Quantity', value: warUnits }
                 ],
                 signer: createDataItemSigner(window.arweaveWallet),
             });
             try {
                 let { Messages, Error } = await result({
                     message: getSwapMessage,
-                    process: CRED,
+                    process: wAR,
                 });
                 if (Error) {
                     alert("Error handling swap:" + Error);
@@ -92,7 +92,7 @@ function Trunk() {
                     setSwapSuccess(true)
                 }
             } catch (error) {
-                alert("There was an error when swapping CRED for TRUNK: " + error)
+                alert("There was an error when swapping wAR for TRUNK: " + error)
             }
         } catch (error) {
             alert('There was an error swapping: ' + error)
@@ -160,7 +160,7 @@ function Trunk() {
                         });
                         const balanceTag = messageResponse.Messages[0].Tags.find((tag: Tag) => tag.name === 'Balance')
                         const balance = balanceTag ? parseFloat((balanceTag.value / 1000).toFixed(4)) : 0;
-                        setCredBalance(balance)
+                        setwARBalance(balance)
                     }
                 } catch (error) {
                     console.error(error);
@@ -190,7 +190,7 @@ function Trunk() {
         }
 
         fetchBalance(TRUNK)
-        fetchBalance(CRED)
+        fetchBalance(wAR)
         fetchStakers()
     }, [address, swapSuccess])
 
@@ -206,7 +206,7 @@ function Trunk() {
                             <div className='grid grid-cols-2 gap-2 my-8'>
                                 <div className='border-r border-black'>
                                     <p className='text-lg text-center'>
-                                        CRED: <span className='font-bold'>{credBalance}</span>
+                                        wAR: <span className='font-bold'>{warBalance}</span>
                                     </p>
                                 </div>
                                 <div>
@@ -225,15 +225,15 @@ function Trunk() {
                         </p>
                     )
                 }
-                { address && credBalance > 0 ? 
+                { address && warBalance > 0 ? 
                     (
                         <div>
                             <div className="flex flex-col space-y-2 items-center justify-center mt-8">
                             <input
                                 type="text"
                                 name="swap"
-                                placeholder="Enter value of CRED to swap"
-                                value={credValue}
+                                placeholder="Enter value of wAR to swap"
+                                value={warValue}
                                 onChange={handleInputChange}
                                 className="py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
@@ -250,10 +250,10 @@ function Trunk() {
                         <div></div>
                     )
                 }
-                {address && credBalance === 0 ? 
+                {address && warBalance === 0 ? 
                     (
                         <div>
-                            <p className='text-sm text-center'>Get CRED by completing <a href="https://cookbook_ao.g8way.io/tutorials/begin/index.html" target="_blank" rel="noopener noreferrer" className='font-bold underline'>quests on ao</a>.</p>
+                            <p className='text-sm text-center'>Get wAR by completing <a href="https://cookbook_ao.g8way.io/tutorials/begin/index.html" target="_blank" rel="noopener noreferrer" className='font-bold underline'>quests on ao</a>.</p>
                         </div>
                     ) :
                     (
