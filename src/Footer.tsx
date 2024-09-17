@@ -18,7 +18,7 @@ const Footer = () => {
   const fetchAddress = async () => {
       await window.arweaveWallet.connect(permissions, {
           name: "TRUNK",
-          logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
+          logo: "hqg-Em9DdYHYmMysyVi8LuTGF8IF_F7ZacgjYiSpj0k"
       });
       try {
           const address = await window.arweaveWallet.getActiveAddress();
