@@ -4,7 +4,7 @@ import { PermissionType } from 'arconnect';
 
 import Footer from './Footer';
 
-const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
+const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
