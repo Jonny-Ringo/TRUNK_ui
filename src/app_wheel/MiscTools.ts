@@ -2,7 +2,7 @@ import { dryrun, message, createDataItemSigner, result } from "@permaweb/aoconne
 import { PermissionType } from 'arconnect';
 
 const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
-const VOTER = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4";
+const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE"; //"aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4";
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
@@ -381,31 +381,41 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
 
 // Send({ Target = ao.id, Action = "Get-Project" })
 export const GetProjects = async () => { 
-    console.log("GetProjects...");
+    console.log("Get-Project...");
     try {
-        const getProjects = await message({
+        const result = await dryrun({
             process: VOTER,
             tags: [
                 { name: 'Action', value: 'Get-Project' },
-                
             ],
             signer: createDataItemSigner(window.arweaveWallet),
         });
-        const { Messages, Error } = await result({
-            message: getProjects,
+        if (result) {
+            return result.Messages[0].Data;
+          } else {
+            console.log("Got no response from dryrun!")
+          }
+    } catch (error) {
+        return "Error";
+    }
+};
+
+// Send({ Target = ao.id, Action = "Get-Top-Projects" })
+export const GetTopProjects = async () => { 
+    console.log("Get-Top-Projects...");
+    try {
+        const result = await dryrun({
             process: VOTER,
+            tags: [
+                { name: 'Action', value: 'Get-Top-Projects' },
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
         });
-        if (Error) {
-            return "Error sending:" + Error;
-        }
-        if (!Messages || Messages.length === 0) {
-            return "No messages were returned from ao. Please try later."; 
-        }
-        const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
-        if (actionTag.value === "Get-Project") {
-            console.log("Debit-Notice: ", actionTag.value);
-        }
-        return "Success"; //Messages[0].tx;
+        if (result) {
+            return result.Messages[0].Data;
+          } else {
+            console.log("Got no response from dryrun!")
+          }
     } catch (error) {
         return "Error";
     }

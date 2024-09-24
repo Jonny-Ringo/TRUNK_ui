@@ -14,6 +14,10 @@ import VoteModal from './VoteModal';
 import './extrastyle.css';
 import { GetAddressStakedTrunkAmount } from './MiscTools';
 import StakeModal from './StakeModal';
+import VoterModal from '../voter/VoterModal';
+import AddProject from '../voter/AddProject';
+import VoterFooter from '../voter/VoterFooter';
+import LeaderboardModal from '../voter/LeaderboardModal';
 
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"
@@ -54,6 +58,10 @@ function Wheel () {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isStakeModalOpen, setIsStakeModalOpen] = useState(false);
 
+    // Project Leaderboard
+    const [isVoterModalOpen, setIsVoterModalOpen] = useState(false);
+    const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+
     const [isConnected, setIsConnected] = useState(false);
     const [address, setAddress] = useState<string>('');
     const [voteData, setVoteData] = useState<VoteItem[]>([]);
@@ -72,7 +80,7 @@ function Wheel () {
       container: canvasContainerRef,
     } = useRive(
       {
-        src: "/app_wheel/trunk_app.riv",
+        src: "https://arweave.net/F6RbszQLD3LlJtWJFRSyujNg7uUyYeCn0sXjBuQO3YM",
         artboard: "TrunkUI",
         stateMachines: "app_state",
         autoplay: true,
@@ -306,11 +314,12 @@ function Wheel () {
                   {typedValue}
                 </div>
             </div>
+
+            <VoterFooter isModalOpen={isVoterModalOpen} setVoterModalOpen={setIsVoterModalOpen} />
+            <VoterModal isOpen={isVoterModalOpen} setIsOpen={setIsVoterModalOpen} address={ address } />
             
         </div>
-
-        
-        </div>
+      </div>
 	);
 }
 
