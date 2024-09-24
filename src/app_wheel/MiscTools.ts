@@ -1,8 +1,7 @@
 import { dryrun, message, createDataItemSigner, result } from "@permaweb/aoconnect";
 import { PermissionType } from 'arconnect';
-import { send } from "process";
 
-const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
+const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww";
 const VOTER = "aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4";
 
 const permissions: PermissionType[] = [
@@ -26,14 +25,6 @@ interface StakerResult {
 interface Tag {
     name: string;
     value: string;
-}
-
-interface ProjectInfo {
-    Name: string;
-    IconURL: string;
-    SiteURL: string;
-    Stake: number;
-    Owner: string;
 }
 
 export const GetAddressStakedTrunkAmount = async (address: string): Promise<number> => {
@@ -82,7 +73,6 @@ export const GetTrunkBalance = async (address: string): Promise<number> => {
             });
             const balanceTag = messageResponse.Messages[0].Tags.find((tag: Tag) => tag.name === 'Balance')
             const balance = balanceTag ? parseFloat((balanceTag.value / 1000).toFixed(4)) : 0;
-            console.log("Balance: ", balance);
             return balance;
 
         } catch (error) {

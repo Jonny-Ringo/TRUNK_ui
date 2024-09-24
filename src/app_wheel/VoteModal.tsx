@@ -20,13 +20,14 @@ interface VoteItem {
     yay: number;
     nay: number;
     deadline: number;
+    command: string;
+    prop: string;
 }
 
 interface Tag {
     name: string;
     value: string;
 }
-
 
 interface VoteModalProps {
   isOpen: boolean;
@@ -35,72 +36,33 @@ interface VoteModalProps {
 }
 
 const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
-
-
-    // const [address, setAddress] = useState('');
     const [voteData, setVoteData] = useState<VoteItem[]>([]);
     const [stakeValue, setStakeValue] = useState('');
     const [unstakeValue, setUnstakeValue] = useState('');
-
-    const [trunkBalance, setTrunkBalance] = useState(0)
-    const [credBalance, setCredBalance] = useState(0)
-
+    const [trunkBalance, setTrunkBalance] = useState(0);
+    const [credBalance, setCredBalance] = useState(0);
     const [maxTrunkBalance, setMaxTrunkBalance] = useState('');
     const [maxStakedBalance, setMaxStakedBalance] = useState<number>(0);
-
     const [isLoading, setIsLoading] = useState(false);
     const [loadMessage, setLoadMessage] = useState('');
 
-    const {
-        rive,
-        setCanvasRef,
-        setContainerRef,
-        canvas: canvasRef,
-        container: canvasContainerRef,
-      } = useRive(
-        {
-          src: "/app_wheel/trunk_spinner.riv",
-          artboard: "spinner",
-          stateMachines: "main",
-          autoplay: false,
-          onLoad: () => {
-            console.log("Rive loaded!");
-          },
-          onPlay: () => {
-            console.log('Animation is playing..');
-          },
-          onPause: () => {
-            console.log('Animation is paused..');
-          }
-        },
-        {
-          shouldResizeCanvasToContainer: true,
-        }
-      );
-
-    // Reset stake/unstake values
     useEffect(() => {
-      if(!isOpen) {
-        setStakeValue('');
-        setUnstakeValue('');
-        setTrunkBalance(0);
-        setLoadMessage('');
-      } else {
-        UpdateUI();
-      }
+        if (!isOpen) {
+            setStakeValue('');
+            setUnstakeValue('');
+            setTrunkBalance(0);
+            setLoadMessage('');
+        } else {
+            UpdateUI();
+        }
     }, [isOpen]);
 
     const UpdateUI = async () => {
         try {
-
             setIsLoading(true);
-            // rive?.play();
-
-            // Get Staked Trunk amount
             CallGetAddressStakedTrunkAmount();
-
-            getVotes();
-
+            
+            // Fetch votes
             const votes = await getVotes();
             if (typeof votes !== 'string') { 
                 setVoteData(votes);
@@ -109,13 +71,11 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
             // Extra second for loading spinner
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // rive?.pause();
             setIsLoading(false);
-
         } catch (error) {
             console.error("Failed to update: ", error);
         }
-    }
+    };
 
     const getVotes = async () => {
         try {
@@ -125,17 +85,26 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                     { name: 'Action', value: "Get-Votes" }
                 ]
             });
-            if (result && result.Messages[0]) {
-                return JSON.parse(result.Messages[0].Data);
+    
+            if (result && result.Messages && result.Messages[0]) {
+                try {
+                    const votes = JSON.parse(result.Messages[0].Data);
+                    console.log('Votes:', votes); // Log the votes to inspect
+                    return votes;
+                } catch (parseError) {
+                    console.error("Failed to parse JSON data:", parseError);
+                    return [];
+                }
             } else {
                 console.log("No readable data from dryrun!");
-                return "";
+                return [];
             }
         } catch (e) {
             console.log(e);
-            return "";
+            return [];
         }
     };
+    
 
     const vote = async (id: string, side: string) => {
         console.log(id, side);
@@ -167,7 +136,6 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
 
                 UpdateUI();
                 setLoadMessage("Vote successful!");
-                // alert( "Vote successful!" );
             } catch (e) {
                 console.log(e);
             }
@@ -176,61 +144,54 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
         }
     };
 
-    // useEffect(() => {
-    //     const fetchVotes = async () => {
-    //         const votes = await getVotes();
-    //         if (typeof votes !== 'string') { 
-    //             setVoteData(votes);
-    //         }
-    //     };
-
-    //     fetchVotes();
-    // }, [address]);
-
     const CallGetAddressStakedTrunkAmount = async () => {
         try {
             const result = await GetAddressStakedTrunkAmount(address);
-            setMaxStakedBalance( result );
-            
+            setMaxStakedBalance(result);
         } catch (error) {
             console.error("Failed to get stakers: ", error);
         }
-    }
+    };
 
     function getVoteDataInModal() {
         return (
           <>
-            
             <div className="flex flex-row items-center justify-center space-x-2">
-
                 <div className="flex flex-col items-center justify-center space-x-2">
                     <img src="Trunk_Logo_White.png" alt="Trunk Logo" className="w-12 h-12" />
                 </div>
-                
                 <div className="flex flex-col items-center justify-center space-x-2">
-                    <p className="text-white"> Staked: {maxStakedBalance} </p>
+                <p className="text-white"> Staked: {maxStakedBalance !== null && maxStakedBalance !== undefined ? maxStakedBalance.toLocaleString() : 'N/A'} </p>
                 </div>
-                
             </div>
 
             <br/>
-                <div className="w-1/2 h-px bg-white mx-auto"></div>
+            <div className="w-1/2 h-px bg-white mx-auto"></div>
             <br/>
-                    
+
             <div>
             {voteData.map((item, index) => (
                 <div key={index} className='p-4 border border-gray rounded shadow-md w-full'>
                     <p className='text-2xl mb-4'>Candidate #{index}</p>
-                    <a className='font-bold underline' href={`https://arweave.net/${item.tx}`} target="_blank" rel="noopener noreferrer">Memeframe URL</a>
-                    <p className='mt-4'>Yay: {item.yay / 1000}, Nay: {item.nay / 1000}</p>
-                    <p>Decided at block: {item.deadline}</p>
+
+                    {/* Display the command field */}
+                    <p className='text-sm mb-4'>Command: <br></br><span className='text-white-600'>{item.command || 'N/A'}</span></p>
+
+                    {/* Display the prop (proposal) field */}
+                    <div>
+                        <p className='text-sm mb-4'>Proposal: <br></br><span className='text-white-600'>{item.prop || 'N/A'}</span></p>
+                    </div>
+
+                    <p className='mt-4'>Yay: {item.yay ? item.yay / 1000 : 0}, Nay: {item.nay ? item.nay / 1000 : 0}</p>
+                    <p>Decided at block: {item.deadline || 'Unknown'}</p>
+
                     {address ? (
                         <div className='text-center mt-4'>
                             <button onClick={() => vote(item.tx, "yay")} className="bg-[#9ECBFF] hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-4">
-                                Yay 
+                                Yay
                             </button>
                             <button onClick={() => vote(item.tx, "nay")} className="bg-[#EF707E] hover:bg-red-400 text-white font-bold py-2 px-4 rounded">
-                                Nay 
+                                Nay
                             </button>
                             <p className='text-sm my-2'>Your vote is cast with all the TRUNK you currently have staked.</p>
                         </div>
@@ -238,7 +199,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
                         <div>
                             <p className='text-center my-4'>
                                 <button onClick={FetchAddress} className="bg-black hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                                    Connect 
+                                    Connect
                                 </button>
                             </p>
                         </div>
@@ -253,62 +214,44 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     function VoteModalRenderer() {
         return (
             <div className="flex flex-col items-center justify-center">
-                {voteData.length > 0 && address !== "" ? getVoteDataInModal() : <p> No votes available...</p>}
+                {voteData.length > 0 && address !== "" ? getVoteDataInModal() : <p>No votes available...</p>}
             </div>
         );
     }
 
-
     function DisconnectedRenderer() {
         return (
-          <>
-            <div className="flex flex-col items-center justify-center"> Disconnected </div> 
-          </>
+            <>
+                <div className="flex flex-col items-center justify-center">Disconnected</div> 
+            </>
         );
     }
 
     function LoadingRenderer() {
         return (
-          <>
-            {/* <div 
-              ref={setContainerRef} 
-              className="w-full h-1/2 bg-transparent flex justify-center items-center mx-auto"
-            >
-              <canvas
-                ref={setCanvasRef}
-                className="w-full h-full bg-transparent block relative max-h-screen max-w-screen align-top"
-                aria-label="Dog haz coin?"
-              ></canvas>
-            </div> */}
-
-            {/* <div className="flex flex-col items-center justify-center"> ... </div>  */}
-
-            <Spinner />
-
-            <div className="flex flex-col items-center justify-center"> {loadMessage} </div> 
-
-          </>
+            <>
+                <Spinner />
+                <div className="flex flex-col items-center justify-center">{loadMessage}</div> 
+            </>
         );
     }
 
     function MainRenderer() {
         return (
-          <>
-            { address === "" ? DisconnectedRenderer() :  VoteModalRenderer() }
-          </>
+            <>
+                {address === "" ? DisconnectedRenderer() : VoteModalRenderer()}
+            </>
         );
     }
 
-
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="p-4">
-
-        { isLoading ? LoadingRenderer() : MainRenderer() }
-            
-        </div>
+            <div className="p-4">
+                {isLoading ? LoadingRenderer() : MainRenderer()}
+            </div>
         </Modal>
     );
 };
 
 export default VoteModal;
+
