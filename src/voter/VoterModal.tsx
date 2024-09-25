@@ -31,152 +31,152 @@ interface VoterModalProps {
   address: string;
 }
 
-const TRUNK = "OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww"
-const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE" //"aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4"
+const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ" //OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww
+const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE" //aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
 
 
-const fakeProjects: ProjectInfo[] = [
-  {
-    Name: "Project Alpha",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PA",
-    SiteURL: "https://projectalpha.com",
-    Stake: 1200,
-    Owner: "John Doe"
-  },
-  {
-    Name: "Project Beta",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PB",
-    SiteURL: "https://projectbeta.com",
-    Stake: 2500,
-    Owner: "Jane Smith"
-  },
-  {
-    Name: "Project Gamma",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PG",
-    SiteURL: "https://projectgamma.com",
-    Stake: 3000,
-    Owner: "Alice Johnson"
-  },
-  {
-    Name: "Project Delta",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PD",
-    SiteURL: "https://projectdelta.com",
-    Stake: 4500,
-    Owner: "Bob Williams"
-  },
-  {
-    Name: "Project Epsilon",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PE",
-    SiteURL: "https://projectepsilon.com",
-    Stake: 1800,
-    Owner: "Charlie Brown"
-  },
-  {
-    Name: "Project Zeta",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PZ",
-    SiteURL: "https://projectzeta.com",
-    Stake: 3700,
-    Owner: "Diana Prince"
-  },
-  {
-    Name: "Project Eta",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PE",
-    SiteURL: "https://projecteta.com",
-    Stake: 600,
-    Owner: "Bruce Wayne"
-  },
-  {
-    Name: "Project Theta",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PT",
-    SiteURL: "https://projecttheta.com",
-    Stake: 5000,
-    Owner: "Clark Kent"
-  },
-  {
-    Name: "Project Iota",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PI",
-    SiteURL: "https://projectiota.com",
-    Stake: 1100,
-    Owner: "Peter Parker"
-  },
-  {
-    Name: "Project Kappa",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PK",
-    SiteURL: "https://projectkappa.com",
-    Stake: 3600,
-    Owner: "Tony Stark"
-  },
-  {
-    Name: "Project Lambda",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PL",
-    SiteURL: "https://projectlambda.com",
-    Stake: 2100,
-    Owner: "Steve Rogers"
-  },
-  {
-    Name: "Project Mu",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PM",
-    SiteURL: "https://projectmu.com",
-    Stake: 4900,
-    Owner: "Natasha Romanoff"
-  },
-  {
-    Name: "Project Nu",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PN",
-    SiteURL: "https://projectnu.com",
-    Stake: 2500,
-    Owner: "Bruce Banner"
-  },
-  {
-    Name: "Project Xi",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PX",
-    SiteURL: "https://projectxi.com",
-    Stake: 3900,
-    Owner: "Diana Prince"
-  },
-  {
-    Name: "Project Omicron",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PO",
-    SiteURL: "https://projectomicron.com",
-    Stake: 800,
-    Owner: "Carol Danvers"
-  },
-  {
-    Name: "Project Pi",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PP",
-    SiteURL: "https://projectpi.com",
-    Stake: 1800,
-    Owner: "T'Challa"
-  },
-  {
-    Name: "Project Rho",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PR",
-    SiteURL: "https://projectrho.com",
-    Stake: 700,
-    Owner: "Stephen Strange"
-  },
-  {
-    Name: "Project Sigma",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PS",
-    SiteURL: "https://projectsigma.com",
-    Stake: 3100,
-    Owner: "Bucky Barnes"
-  },
-  {
-    Name: "Project Tau",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PT",
-    SiteURL: "https://projecttau.com",
-    Stake: 4000,
-    Owner: "Wanda Maximoff"
-  },
-  {
-    Name: "Project Upsilon",
-    IconURL: "https://via.placeholder.com/40x40.png?text=PU",
-    SiteURL: "https://projectupsilon.com",
-    Stake: 2300,
-    Owner: "Sam Wilson"
-  }
-];
+// const fakeProjects: ProjectInfo[] = [
+//   {
+//     Name: "Project Alpha",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PA",
+//     SiteURL: "https://projectalpha.com",
+//     Stake: 1200,
+//     Owner: "John Doe"
+//   },
+//   {
+//     Name: "Project Beta",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PB",
+//     SiteURL: "https://projectbeta.com",
+//     Stake: 2500,
+//     Owner: "Jane Smith"
+//   },
+//   {
+//     Name: "Project Gamma",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PG",
+//     SiteURL: "https://projectgamma.com",
+//     Stake: 3000,
+//     Owner: "Alice Johnson"
+//   },
+//   {
+//     Name: "Project Delta",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PD",
+//     SiteURL: "https://projectdelta.com",
+//     Stake: 4500,
+//     Owner: "Bob Williams"
+//   },
+//   {
+//     Name: "Project Epsilon",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PE",
+//     SiteURL: "https://projectepsilon.com",
+//     Stake: 1800,
+//     Owner: "Charlie Brown"
+//   },
+//   {
+//     Name: "Project Zeta",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PZ",
+//     SiteURL: "https://projectzeta.com",
+//     Stake: 3700,
+//     Owner: "Diana Prince"
+//   },
+//   {
+//     Name: "Project Eta",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PE",
+//     SiteURL: "https://projecteta.com",
+//     Stake: 600,
+//     Owner: "Bruce Wayne"
+//   },
+//   {
+//     Name: "Project Theta",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PT",
+//     SiteURL: "https://projecttheta.com",
+//     Stake: 5000,
+//     Owner: "Clark Kent"
+//   },
+//   {
+//     Name: "Project Iota",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PI",
+//     SiteURL: "https://projectiota.com",
+//     Stake: 1100,
+//     Owner: "Peter Parker"
+//   },
+//   {
+//     Name: "Project Kappa",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PK",
+//     SiteURL: "https://projectkappa.com",
+//     Stake: 3600,
+//     Owner: "Tony Stark"
+//   },
+//   {
+//     Name: "Project Lambda",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PL",
+//     SiteURL: "https://projectlambda.com",
+//     Stake: 2100,
+//     Owner: "Steve Rogers"
+//   },
+//   {
+//     Name: "Project Mu",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PM",
+//     SiteURL: "https://projectmu.com",
+//     Stake: 4900,
+//     Owner: "Natasha Romanoff"
+//   },
+//   {
+//     Name: "Project Nu",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PN",
+//     SiteURL: "https://projectnu.com",
+//     Stake: 2500,
+//     Owner: "Bruce Banner"
+//   },
+//   {
+//     Name: "Project Xi",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PX",
+//     SiteURL: "https://projectxi.com",
+//     Stake: 3900,
+//     Owner: "Diana Prince"
+//   },
+//   {
+//     Name: "Project Omicron",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PO",
+//     SiteURL: "https://projectomicron.com",
+//     Stake: 800,
+//     Owner: "Carol Danvers"
+//   },
+//   {
+//     Name: "Project Pi",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PP",
+//     SiteURL: "https://projectpi.com",
+//     Stake: 1800,
+//     Owner: "T'Challa"
+//   },
+//   {
+//     Name: "Project Rho",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PR",
+//     SiteURL: "https://projectrho.com",
+//     Stake: 700,
+//     Owner: "Stephen Strange"
+//   },
+//   {
+//     Name: "Project Sigma",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PS",
+//     SiteURL: "https://projectsigma.com",
+//     Stake: 3100,
+//     Owner: "Bucky Barnes"
+//   },
+//   {
+//     Name: "Project Tau",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PT",
+//     SiteURL: "https://projecttau.com",
+//     Stake: 4000,
+//     Owner: "Wanda Maximoff"
+//   },
+//   {
+//     Name: "Project Upsilon",
+//     IconURL: "https://via.placeholder.com/40x40.png?text=PU",
+//     SiteURL: "https://projectupsilon.com",
+//     Stake: 2300,
+//     Owner: "Sam Wilson"
+//   }
+// ];
 
 
 const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) => {
@@ -317,7 +317,7 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
       <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex" onClick={onClose}>
         <div className="relative p-6 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10" onClick={(e) => e.stopPropagation()}>
             
-            <ProjectsList Projects={fakeProjects} />
+            <ProjectsList Projects={Projects} />
 
             <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address} />
 
