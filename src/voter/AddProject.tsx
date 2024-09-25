@@ -6,6 +6,7 @@ import { SubmitNewProject, GetTrunkBalance, SendTrunk, GetProjects, CheckProject
     SendNewProjectWithPayment
  } from '../app_wheel/MiscTools';
 import { useGlobalContext } from '../GlobalProvider';
+import Swal from 'sweetalert2';
 
 const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
 
@@ -13,6 +14,7 @@ interface AddProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     address: string;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface ProjectInfo {
@@ -23,7 +25,7 @@ interface ProjectInfo {
     Owner: string;
 }
   
-const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }) => {
+const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, setIsOpen }) => {
 
     const {
         PROJECTS, 
@@ -42,16 +44,39 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }
     const [stake, setStake] = useState('');
     const [owner, setOwner] = useState('');
 
+    const showSuccess = () => {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Your project has been successfully added.',
+          color: "white",
+          icon: 'success',
+          confirmButtonText: 'Done',
+          background: '#2a2c49',
+        });
+      };
+
+    const showFail = () => {
+        Swal.fire({
+          title: 'Fail!',
+          text: 'Project Not Added',
+          color: "white",
+          icon: 'error',
+          confirmButtonText: 'Done',
+          background: '#2a2c49',
+        });
+      };
+
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         SubmitNewProject( address, name, iconURL, siteURL );
-        setIsLoading(true);
+        setIsOpen(false);
+        // setIsLoading(true);
     };
 
     const SubmitNewProject = async ( sender : string, name: string, iconURL: string, siteURL: string  ) => {
         try {
             
-            setLoadMessage("");
+            // setLoadMessage("");
 
             const result = await SendNewProjectWithPayment( sender, name, iconURL, siteURL );
             if( result === "Success" ) {
@@ -61,12 +86,15 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }
                 // Close the modal
 
                 // GetAllProjects();
+                showSuccess();
             } else {
                 console.log("Failed: ", result);
                 setLoadMessage("Failed to add project.");
+                showFail();
             }
 
-            setIsLoading(false);
+            // setIsLoading(false);
+            onClose();
 
         } catch (error) {
             console.log('Error: ' + error);

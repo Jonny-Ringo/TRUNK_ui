@@ -185,9 +185,10 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
       <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex" onClick={onClose}>
         <div className="relative p-6 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10" onClick={(e) => e.stopPropagation()}>
             
-            <ProjectsList Projects={Projects} />
+        <ProjectsList Projects={Projects} />
 
-            <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address} />
+            <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address}
+             setIsOpen={setIsOpen}/>
 
             <button className="bg-[#2F80ED] text-white rounded-lg p-2 z-10" 
                 onClick={(e) => {

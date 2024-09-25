@@ -24,7 +24,11 @@ function ProjectsList ( { Projects }: ProjectsListProps ) {
     <div >
         {Projects.length > 0 && <>
         <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
-            <h1 className="text-lg text-center font-semibold text-gray-900 dark:text-white">AO Project Leaderboard</h1>
+            
+            <div className="flex items-center justify-center">
+                <h1 className="text-lg text-center font-semibold text-gray-900 dark:text-white">AO Project Leaderboard</h1>
+            </div>
+
             {Projects.length > 0 && Projects.map((project, index) => (
                 <li key={index} className="pt-3 pb-3 sm:pt-4 sm:pb-4">
                     <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">

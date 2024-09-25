@@ -19,6 +19,7 @@
     "react-scripts": "5.0.1",
     "react-spinners": "^0.13.8",
     "rive-react": "^4.8.7",
+    "sweetalert2": "^11.14.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
