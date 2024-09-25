@@ -249,6 +249,11 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
             >
                 Unstake TRUNK
             </button>
+            
+            <span className="text-xs text-gray-400 mt-1 italic">
+                Can take &gt; 24 hours
+            </span>
+
             </div>
           </>
         );

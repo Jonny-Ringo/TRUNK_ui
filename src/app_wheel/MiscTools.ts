@@ -2,7 +2,7 @@ import { dryrun, message, createDataItemSigner, result } from "@permaweb/aoconne
 import { PermissionType } from 'arconnect';
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
-const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE"; //"aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4";
+const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
@@ -357,7 +357,8 @@ export const SendNewProjectWithPayment = async ( sender : string, name: string, 
                 { name: 'Sender', value: sender },
                 { name: "X-[NAME]", value: name },
                 { name: "X-[ICONURL]", value: iconURL },
-                { name: "X-[SITEURL]", value: siteURL }
+                { name: "X-[SITEURL]", value: siteURL },
+                { name: "X-[TYPE]", value: "PROJECT" },
             ],
             signer: createDataItemSigner(window.arweaveWallet),
         });
@@ -529,6 +530,50 @@ export const SendProcessMessage = async (processID: string, action: string, data
         return Messages[0].Data; // Note: this is only sending the Data of the msg
     } catch (error) {
         console.log('There was an error adding project: ' + error);
+        return "Error";
+    }
+};
+
+export const SendVoteForProject = async ( sender : string, name : string, id : string ): Promise<string> => { 
+
+    console.log("Trunk:" +sender + " For: " +name+ " ID: " +id );
+    // return "Success";
+
+    try {
+        const sendTrunk = await message({
+            process: TRUNK,
+            tags: [
+                { name: 'Action', value: 'Transfer' },
+                { name: 'Recipient', value: VOTER },
+                { name: 'Quantity', value:  "10" },
+                { name: 'Sender', value: sender },
+                { name: "X-[NAME]", value: name },
+                { name: "X-[ICONURL]", value: "" },
+                { name: "X-[SITEURL]", value: "" },
+                { name: "X-[ID]", value: id.toString() },
+                { name: "X-[TYPE]", value: "VOTE" },
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        const { Messages, Error } = await result({
+            message: sendTrunk,
+            process: TRUNK,
+        });
+        if (Error) {
+            return "Error sending:" + Error;
+        }
+        if (!Messages || Messages.length === 0) {
+            return "No messages were returned from ao. Please try later."; 
+        }
+        const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
+        if (actionTag.value === "Debit-Notice") {
+
+            console.log("Debit-Notice Tags: ", Messages[0].Tags);
+            console.log("Debit-Notice Quantity: ", Messages[0].Tags["Quantity"]);
+            console.log("From: ", Messages[0].Target);
+    }
+        return "Success";
+    } catch (error) {
         return "Error";
     }
 };

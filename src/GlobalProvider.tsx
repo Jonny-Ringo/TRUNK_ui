@@ -6,6 +6,7 @@ interface ProjectInfo {
   SiteURL: string;
   Stake: number;
   Owner: string;
+  ID: number;
 }
 
 interface GlobalContextType {

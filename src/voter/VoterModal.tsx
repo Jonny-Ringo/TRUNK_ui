@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { dryrun, message, createDataItemSigner, result  } from "@permaweb/aoconnect";
 import { PermissionType } from 'arconnect';
-import { GetAddressStakedTrunkAmount, GetTrunkBalance, StakeTrunk, UnstakeTrunk, FetchAddress } from '../app_wheel/MiscTools';
+import { SendVoteForProject } from '../app_wheel/MiscTools';
 import ProjectsList from './ProjectsList';
 import AddProject from './AddProject';
 import { useGlobalContext } from '../GlobalProvider';
@@ -24,6 +24,7 @@ interface ProjectInfo {
     SiteURL: string;
     Stake: number;
     Owner: string;
+    ID : number;
 }
 
 interface VoterModalProps {
@@ -184,8 +185,18 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
     return (
       <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex" onClick={onClose}>
         <div className="relative p-6 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10" onClick={(e) => e.stopPropagation()}>
-            
-        <ProjectsList Projects={Projects} />
+
+          <button 
+              onClick={onClose} 
+              className="absolute top-3 right-3 text-gray-400 hover:text-white focus:outline-none"
+              aria-label="Close Modal"
+          >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+          </button>
+
+        <ProjectsList Projects={Projects} setIsOpen={setIsOpen} />
 
             <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address}
              setIsOpen={setIsOpen}/>
@@ -199,6 +210,8 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
                 Add Project
             </button>
         </div>
+
+
     </div>
 
     );

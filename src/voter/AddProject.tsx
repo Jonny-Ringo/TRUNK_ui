@@ -23,6 +23,7 @@ interface ProjectInfo {
     SiteURL: string;
     Stake: number;
     Owner: string;
+    Id: number;
 }
   
 const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, setIsOpen }) => {
@@ -69,31 +70,20 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         SubmitNewProject( address, name, iconURL, siteURL );
+        
+        // Close parent modal
         setIsOpen(false);
-        // setIsLoading(true);
     };
 
     const SubmitNewProject = async ( sender : string, name: string, iconURL: string, siteURL: string  ) => {
         try {
             
-            // setLoadMessage("");
-
             const result = await SendNewProjectWithPayment( sender, name, iconURL, siteURL );
             if( result === "Success" ) {
-                console.log("Success: ", result);
-
-                setLoadMessage("Success! Project added.");
-                // Close the modal
-
-                // GetAllProjects();
                 showSuccess();
             } else {
-                console.log("Failed: ", result);
-                setLoadMessage("Failed to add project.");
                 showFail();
             }
-
-            // setIsLoading(false);
             onClose();
 
         } catch (error) {
@@ -101,97 +91,12 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
         }
     }
 
-    const GetAllProjects = async () => {
-        
-        const fetchProjects = async () => {
-            console.log("Getting all projects");
-            try {
-              const result = await dryrun({
-                process: VOTER,
-                tags: [{ name: 'Action', value: "Get-Project" }]
-              });
-              if (result) {
-                    return result.Messages[0].Data;
-              } else {
-                console.log("Got no response from dryrun!")
-              }
-            } catch (e) {
-              console.log(e);
-            }
-          };
-
-          const SortProjects = async () => {
-            const processResponse = await fetchProjects();
-
-            const json: ProjectInfo[] = JSON.parse(processResponse);
-            setPROJECTS(json);
-        };
-    
-        SortProjects();
-
-    }
-
     useEffect(() => {
-        if(!isOpen) {
-            setIsLoading(true);
-            GetStaked();
-        } else {
-        }
+        if(!isOpen) { } else { }
     }, [isOpen]);
-
-    useEffect(() => {
-        console.log("Checking staked..." , isStaked);
-    }, [isStaked]);
-
-    const GetStaked = async () => {
-        try {     
-            const staked = await CheckProjectStaker(); console.log("staked: ", staked);
-            if( staked === "true" ) {
-                setIsStaked(true);
-            } else {
-                setIsStaked(false);
-            }
-
-            if( staked ) {
-                setIsLoading(false);
-            }
-
-        } catch (error) {
-            console.log('There was an error getting staked: ' + error);
-        }
-    }
-
-    const SendStake = async () => {
-        try {     
-            const result = await SendTrunk( "10" , address, VOTER );
-            console.log("SendStake: ", result);
-            if( result ) {
-                GetStaked();
-            }
-        } catch (error) {
-            console.log('There was an error getting staked: ' + error);
-        }
-    }
-
-    function StakeRenderer() {
-        return (
-          <>   
-            <button onClick={SendStake} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Stake
-            </button>
-          </>
-        );
-    }
     
     function LoadedModalRender() {
         return (
-          <>
-            {/* {!isStaked && StakeRenderer() } */}
-
-            {/* { StakeRenderer() } */}
-
-            { isStaked === true && 
-
            <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-white-700">Name</label>
@@ -226,35 +131,10 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
                     />
                 </div>
 
-                <div className="mb-4">
-                    <label htmlFor="stake" className="block text-sm font-medium text-white-700">Stake</label>
-                    <input
-                        type="text"
-                        id="stake"
-                        value={stake}
-                        onChange={e => setStake(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-black shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                </div>
-
-                {/* <div className="mb-4">
-                    <label htmlFor="owner" className="block text-sm font-medium text-white-700">Owner</label>
-                    <input
-                        type="text"
-                        id="owner"
-                        value={owner}
-                        onChange={e => setOwner(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-black shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                </div> */}
-
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Submit
                 </button>
             </form>
-            }
-            
-          </>
         );
     }
 
@@ -285,11 +165,6 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
         </>
         );
     }
-
-    const CheckIsProjectStaker = async  () => {
-        const result = await SendProcessMessage( VOTER, "Get-Project-Staker" , "{}" );
-        console.log("CheckIsProjectStaker: ", result);
-    };
 
     return (
         
