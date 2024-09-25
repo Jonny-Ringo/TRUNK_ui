@@ -1,9 +1,11 @@
 import React, { useEffect, useState, FormEvent  } from 'react';
+import { dryrun } from "@permaweb/aoconnect";
 import Modal from '../app_wheel/Modal';
 import Spinner from '../app_wheel/Spinner';
 import { SubmitNewProject, GetTrunkBalance, SendTrunk, GetProjects, CheckProjectStaker, SendProcessMessage,
     SendNewProjectWithPayment
  } from '../app_wheel/MiscTools';
+import { useGlobalContext } from '../GlobalProvider';
 
 const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
 
@@ -12,8 +14,21 @@ interface AddProjectModalProps {
     onClose: () => void;
     address: string;
 }
+
+interface ProjectInfo {
+    Name: string;
+    IconURL: string;
+    SiteURL: string;
+    Stake: number;
+    Owner: string;
+}
   
 const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }) => {
+
+    const {
+        PROJECTS, 
+        setPROJECTS
+    } = useGlobalContext();
 
     const [isLoading, setIsLoading] = useState(false);
     const [loadMessage, setLoadMessage] = useState('');
@@ -29,11 +44,64 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // SubmitNewProject(name, iconURL, siteURL, stake, owner);
-        // console.log({ name, iconURL, siteURL, stake, owner });
-
-        SendNewProjectWithPayment( address, name, iconURL, siteURL );
+        SubmitNewProject( address, name, iconURL, siteURL );
+        setIsLoading(true);
     };
+
+    const SubmitNewProject = async ( sender : string, name: string, iconURL: string, siteURL: string  ) => {
+        try {
+            
+            setLoadMessage("");
+
+            const result = await SendNewProjectWithPayment( sender, name, iconURL, siteURL );
+            if( result === "Success" ) {
+                console.log("Success: ", result);
+
+                setLoadMessage("Success! Project added.");
+                // Close the modal
+
+                // GetAllProjects();
+            } else {
+                console.log("Failed: ", result);
+                setLoadMessage("Failed to add project.");
+            }
+
+            setIsLoading(false);
+
+        } catch (error) {
+            console.log('Error: ' + error);
+        }
+    }
+
+    const GetAllProjects = async () => {
+        
+        const fetchProjects = async () => {
+            console.log("Getting all projects");
+            try {
+              const result = await dryrun({
+                process: VOTER,
+                tags: [{ name: 'Action', value: "Get-Project" }]
+              });
+              if (result) {
+                    return result.Messages[0].Data;
+              } else {
+                console.log("Got no response from dryrun!")
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          };
+
+          const SortProjects = async () => {
+            const processResponse = await fetchProjects();
+
+            const json: ProjectInfo[] = JSON.parse(processResponse);
+            setPROJECTS(json);
+        };
+    
+        SortProjects();
+
+    }
 
     useEffect(() => {
         if(!isOpen) {
@@ -92,7 +160,7 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }
           <>
             {/* {!isStaked && StakeRenderer() } */}
 
-            { StakeRenderer() }
+            {/* { StakeRenderer() } */}
 
             { isStaked === true && 
 

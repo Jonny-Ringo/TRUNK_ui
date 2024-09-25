@@ -373,9 +373,11 @@ export const SendNewProjectWithPayment = async ( sender : string, name: string, 
         }
         const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
         if (actionTag.value === "Debit-Notice") {
-            console.log("Debit-Notice: ", actionTag.value);
+
+            console.log("Debit-Notice Tags: ", Messages[0].Tags);
+            console.log("Debit-Notice Quantity: ", Messages[0].Tags["Quantity"]);
             console.log("From: ", Messages[0].Target);
-        }
+    }
         return "Success";
     } catch (error) {
         return "Error";

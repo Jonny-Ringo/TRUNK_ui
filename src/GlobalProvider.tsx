@@ -29,6 +29,10 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     console.log("MODAL_INDEX: ", MODAL_INDEX);
   }, [MODAL_INDEX]);
 
+  useEffect(() => {
+    console.log("PROJECTS: ", PROJECTS);
+  }, [PROJECTS]);
+
   return (
     <GlobalContext.Provider
       value={{
