@@ -1,7 +1,9 @@
 import React, { useEffect, useState, FormEvent  } from 'react';
 import Modal from '../app_wheel/Modal';
 import Spinner from '../app_wheel/Spinner';
-import { SubmitNewProject, GetTrunkBalance, SendTrunk, GetProjects, CheckProjectStaker, SendProcessMessage } from '../app_wheel/MiscTools';
+import { SubmitNewProject, GetTrunkBalance, SendTrunk, GetProjects, CheckProjectStaker, SendProcessMessage,
+    SendNewProjectWithPayment
+ } from '../app_wheel/MiscTools';
 
 const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
 
@@ -27,8 +29,10 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        SubmitNewProject(name, iconURL, siteURL, stake, owner);
+        // SubmitNewProject(name, iconURL, siteURL, stake, owner);
         // console.log({ name, iconURL, siteURL, stake, owner });
+
+        SendNewProjectWithPayment( address, name, iconURL, siteURL );
     };
 
     useEffect(() => {
@@ -86,7 +90,9 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address }
     function LoadedModalRender() {
         return (
           <>
-            {!isStaked && StakeRenderer() }
+            {/* {!isStaked && StakeRenderer() } */}
+
+            { StakeRenderer() }
 
             { isStaked === true && 
 

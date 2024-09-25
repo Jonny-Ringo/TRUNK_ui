@@ -317,7 +317,7 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
                 { name: 'Recipient', value: recipient },
                 { name: 'Quantity', value: amount },
                 { name: 'Sender', value: sender },
-                
+                { name: "X-[Shit]", value: "[Poop]" }
             ],
             signer: createDataItemSigner(window.arweaveWallet),
         });
@@ -337,6 +337,46 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
             console.log("From: ", Messages[0].Target);
         }
         return "Success"; //Messages[0].tx;
+    } catch (error) {
+        return "Error";
+    }
+};
+
+export const SendNewProjectWithPayment = async ( sender : string, name: string, iconURL: string, siteURL: string ): Promise<string> => { 
+
+    console.log("Sending Trunk To:" + sender );
+    console.log("Adding Project: " + name + " " + iconURL + " " + siteURL);
+
+    try {
+        const sendTrunk = await message({
+            process: TRUNK,
+            tags: [
+                { name: 'Action', value: 'Transfer' },
+                { name: 'Recipient', value: VOTER },
+                { name: 'Quantity', value:  "10" },
+                { name: 'Sender', value: sender },
+                { name: "X-[NAME]", value: name },
+                { name: "X-[ICONURL]", value: iconURL },
+                { name: "X-[SITEURL]", value: siteURL }
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        const { Messages, Error } = await result({
+            message: sendTrunk,
+            process: TRUNK,
+        });
+        if (Error) {
+            return "Error sending:" + Error;
+        }
+        if (!Messages || Messages.length === 0) {
+            return "No messages were returned from ao. Please try later."; 
+        }
+        const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
+        if (actionTag.value === "Debit-Notice") {
+            console.log("Debit-Notice: ", actionTag.value);
+            console.log("From: ", Messages[0].Target);
+        }
+        return "Success";
     } catch (error) {
         return "Error";
     }

@@ -221,11 +221,22 @@ Handlers.add(
     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
     function (msg)
 
-        local newStaker = InitNewProjectStaker(msg.Sender, msg.Quantity)
-        table.insert(ProjectStakers, newStaker)
+        -- Removed Staking: 
+        -- local newStaker = InitNewProjectStaker(msg.Sender, msg.Quantity)
+        -- table.insert(ProjectStakers, newStaker)
         
-        print("Got some trunk: " .. msg.Quantity .. " from " .. msg.Sender)
-        Handlers.utils.reply("Got some trunk")(msg)
+        -- print( "Tag Check: " .. msg["X-Shit"] )
+        -- print( "Data Check: " .. msg.Data )
+
+        print("Got Trunk: " .. msg.Quantity .. " from " .. msg.Sender)
+        print( "New Project: " .. msg["X-[NAME]"] .. " Icon: " .. msg["X-[ICONURL]"] .. " Site: " .. msg["X-[SITEURL]"] )
+
+        local newProject = InitNewProject(msg["X-[NAME]"], msg["X-[SITEURL]"], msg["X-[ICONURL]"], msg.Quantity, msg.Sender)
+        table.insert(Projects, newProject)
+
+        Handlers.utils.reply("Project Successfully Added")(msg)
+
+        -- Handlers.utils.reply("Trunk: " .. msg.Quantity .. " From: " .. msg.Sender)(msg)
     end
 )
 
