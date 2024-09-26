@@ -33,8 +33,8 @@ interface VoterModalProps {
   address: string;
 }
 
-const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ" //OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww
-const VOTER = "7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE" //aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
+const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"; //OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww
+const VOTER = "h_fyEP9EAj84749UohXWVmEUH24OXgG1t2qPQ41TMsk"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE" //aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
 
 const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) => {
 

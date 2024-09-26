@@ -323,13 +323,6 @@ Handlers.add(
     end
 )
 
-.editor
-Handlers.add("Greeting-Name", { Action = "Greeting"}, function (msg)
-  msg.reply({Data = "Hello " .. msg.Data or "bob"})
-  print('server: replied to ' .. msg.Data or "bob")
-end)
-.done
-
 -- ToDo:
 -- Remove Project By Admin Handler (make sure its this ao process)
 -- Remove Project By Owner Handler
