@@ -9,6 +9,12 @@ interface ProjectInfo {
   ID: number;
 }
 
+interface ProjectVote {
+  Stake: number;
+  Owner: string;
+  ID: number;
+}
+
 interface GlobalContextType {
   ADDRESS: string;
   setADDRESS: React.Dispatch<React.SetStateAction<string>>;
@@ -16,6 +22,8 @@ interface GlobalContextType {
   setMODAL_INDEX: React.Dispatch<React.SetStateAction<number>>;
   PROJECTS: ProjectInfo[];
   setPROJECTS: React.Dispatch<React.SetStateAction<ProjectInfo[]>>;
+  VOTES: ProjectVote[];
+  setVOTES: React.Dispatch<React.SetStateAction<ProjectVote[]>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | null>(null);
@@ -23,8 +31,9 @@ const GlobalContext = createContext<GlobalContextType | null>(null);
 const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   
   const [ADDRESS, setADDRESS] = useState<string>('');
-  const [MODAL_INDEX, setMODAL_INDEX] = useState<number>(0); // use this to open modals, 0 is closed
-  const [PROJECTS, setPROJECTS] = useState<ProjectInfo[]>([]); // List of projects in the DAO
+  const [MODAL_INDEX, setMODAL_INDEX] = useState<number>(0); // Not Used: 9.26.24
+  const [PROJECTS, setPROJECTS] = useState<ProjectInfo[]>([]);
+  const [VOTES, setVOTES] = useState<ProjectVote[]>([]);
 
   useEffect(() => {
     console.log("MODAL_INDEX: ", MODAL_INDEX);
@@ -42,7 +51,9 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         MODAL_INDEX,
         setMODAL_INDEX,
         PROJECTS,
-        setPROJECTS
+        setPROJECTS,
+        VOTES,
+        setVOTES
       }}
     >
       {children}

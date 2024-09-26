@@ -3,12 +3,12 @@ local json = require("json")
 local Projects = Projects or {}
 local ProjectStakers = ProjectStakers or {}
 local ProjectIdCounter = ProjectIdCounter or 0
-
 local ProjectVotes = ProjectVotes or {}
 
 local TRUNK = TRUNK or "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"
 
--- VOTER: 7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE
+-- VOTER 0.1a: 7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE
+-- VOTER 0.2a (AO 2.0): h_fyEP9EAj84749UohXWVmEUH24OXgG1t2qPQ41TMsk
 -- TRUNK: wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ
 -- .load ./process/voter.lua
 -- Send({ Target=ao.id, Action="Ping" })
@@ -20,8 +20,15 @@ function InitNewProject(name, siteURL, iconURL, stakeAmount, owner)
         IconURL = iconURL,
         Stake = stakeAmount,
         Owner = owner,
-        Votes = {},
-        ID = GetNewID(), --Give the projects its own id
+        ID = GetNewID(),
+    }
+end
+
+function InitNewVote(owner, stake, projectId )
+    return {
+        Stake = stake,
+        Owner = owner,
+        ID = projectId,
     }
 end
 
@@ -90,32 +97,34 @@ local function findProjectByID(id)
     return nil
 end
 
--- Function to register a vote with an associated amount
 function RegisterVote(project, voterAddress, voterAmount)
-    -- Validate input parameters
     if project and voterAddress and voterAmount then
-        -- Initialize the Votes table if it doesn't exist
-        if not project.Votes then
-            project.Votes = {}
+        if not ProjectVotes[project.ID] then
+            ProjectVotes[project.ID] = {}
         end
         
-        -- Create a new vote entry with address and amount
-        local newVote = {
-            address = voterAddress,
-            amount = voterAmount
-        }
+        local votesForProject = ProjectVotes[project.ID]
         
-        -- Insert the new vote into the Votes table
-        table.insert(project.Votes, newVote)
+        if votesForProject[voterAddress] then
+            votesForProject[voterAddress].amount = votesForProject[voterAddress].amount + voterAmount
+            
+            if votesForProject[voterAddress].amount <= 0 then
+                votesForProject[voterAddress] = nil
+                print("Removed voter " .. voterAddress .. " due to non-positive vote amount.")
+            else
+                print("Updated voter " .. voterAddress .. " with new amount: " .. votesForProject[voterAddress].amount)
+            end
+        else
+            votesForProject[voterAddress] = {
+                address = voterAddress,
+                amount = voterAmount
+            }
+            print("Added new voter " .. voterAddress .. " with amount: " .. voterAmount)
+        end
         
-        -- Persist the updated Projects table if necessary
-        -- This depends on how your AO handles state persistence
-        -- For example:
-        -- state.Projects = Projects
-        
-        return true -- Indicate success
+        return true
     else
-        return false -- Indicate failure due to missing parameters
+        return false
     end
 end
 
@@ -169,26 +178,8 @@ Handlers.add(
             Handlers.utils.reply("No matching staker found for sender: " .. tostring(sender))(msg)
         end
 
-        
-
-        -- Send({Target = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action = "Balance"})
-        
-        -- local _balance = msg.Data
-        -- print("Balance: " .. _balance)
-        
-        -- local balance_number = tonumber(_balance)
-
-        -- if( balance_number < 0.1 ) then
-        --     Handlers.utils.reply("Insufficient Balance")(msg)
-        -- else
-        --     local newProject = InitNewProject(msg.Name, msg.SiteURL, msg.IconURL, msg.Stake, msg.Owner)
-        --     print("New Project: " .. newProject.Name)
-        --     -- table.insert(Projects, newProject)
-        --     Handlers.utils.reply("Project Added: " .. msg.Name)(msg)
-        -- end
     end
 )
-
 
 Handlers.add(
     "Balance-Response",
@@ -254,50 +245,23 @@ Handlers.add(
     end
 )
 
--- Got Some Trunk
--- Handlers.add(
---     "Credit-Notice",
---     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
---     function (msg)
-        
---         print("Got Trunk: " .. msg.Quantity .. " from " .. msg.Sender)
---         print( "Type: " .. msg["X-[TYPE]"] .. " For: " .. msg["X-[NAME]"] )
-
---         if msg["X-[TYPE]"] == "PROJECT" then
-
---             -- New Project submitted
---             print( "New Project: " .. msg["X-[NAME]"] .. " Icon: " .. msg["X-[ICONURL]"] .. " Site: " .. msg["X-[SITEURL]"] )
-
---             local newProject = InitNewProject(msg["X-[NAME]"], msg["X-[SITEURL]"], msg["X-[ICONURL]"], msg.Quantity, msg.Sender)
---             table.insert(Projects, newProject)
-
---             Handlers.utils.reply("Project Successfully Added")(msg)
-            
---         else if msg["X-[TYPE]"] == "VOTE"
---             -- New Vote submitted
---             print( "New Vote: " .. msg["X-[NAME]"] .. " Id: " .. msg["X-[ID]"] )
---         end
---     end
--- )
 Handlers.add(
     "Credit-Notice",
     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
     function (msg)
         
-        -- Safely access tags with default values to prevent nil errors
         local actionType = msg["X-[TYPE]"] or ""
         local projectName = msg["X-[NAME]"] or ""
         local iconURL = msg["X-[ICONURL]"] or ""
         local siteURL = msg["X-[SITEURL]"] or ""
         local voteID = tonumber(msg["X-[ID]"]) or 0
-        local sender = msg.From or msg.Sender or "Unknown Sender"
+        local sender = msg.Sender or "Unknown Sender"
         local quantity = msg.Quantity or 0
 
         print("Got Trunk: " .. quantity .. " from " .. sender)
         print("Type: " .. actionType .. " For: " .. projectName)
 
         if actionType == "PROJECT" then
-            -- New Project submitted
             print("New Project: " .. projectName .. " Icon: " .. iconURL .. " Site: " .. siteURL)
 
             local success, newProject = pcall(InitNewProject, projectName, siteURL, iconURL, quantity, sender)
@@ -310,14 +274,11 @@ Handlers.add(
             end
             
         elseif actionType == "VOTE" then
-            -- New Vote submitted
             print("New Vote: " .. projectName .. " Id: " .. voteID)
             
-            -- Find the project by ID
             local project = findProjectByID(voteID)
             
             if project then
-                -- Implement vote handling logic here
                 local success, voteResult = pcall(RegisterVote, project, sender, quantity)
                 if success and voteResult then
                     Handlers.utils.reply("Vote Successfully Registered")(msg)
@@ -326,12 +287,10 @@ Handlers.add(
                     Handlers.utils.reply("Vote Registration Failed")(msg)
                 end
             else
-                -- Project not found
                 print("Project with ID " .. voteID .. " not found.")
                 Handlers.utils.reply("Project Not Found")(msg)
             end
         else
-            -- Handle unexpected types
             print("Unhandled Action Type: " .. actionType)
             Handlers.utils.reply("Unknown Action Type")(msg)
         end
@@ -344,7 +303,6 @@ Handlers.add(
     Handlers.utils.hasMatchingTag("Action", "Get-Project-Staker"),
     function(msg)
         
-        -- Check is project is a staker
         local matchedStaker = nil
 
         for _, staker in ipairs(ProjectStakers) do
@@ -365,13 +323,13 @@ Handlers.add(
     end
 )
 
+.editor
+Handlers.add("Greeting-Name", { Action = "Greeting"}, function (msg)
+  msg.reply({Data = "Hello " .. msg.Data or "bob"})
+  print('server: replied to ' .. msg.Data or "bob")
+end)
+.done
 
-
--- Vote Handler
-
--- Remove Votes Handler
-
--- Must add "CronTick" handler for cron to work
-
+-- ToDo:
 -- Remove Project By Admin Handler (make sure its this ao process)
 -- Remove Project By Owner Handler
