@@ -7,8 +7,9 @@ local ProjectVotes = ProjectVotes or {}
 
 local TRUNK = TRUNK or "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"
 
--- VOTER 0.1a: 7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE
--- VOTER 0.2a (AO 2.0): h_fyEP9EAj84749UohXWVmEUH24OXgG1t2qPQ41TMsk
+-- VOTER v0.1a: 7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE
+-- VOTER v0.2a (AO 2.0 Upgrade): h_fyEP9EAj84749UohXWVmEUH24OXgG1t2qPQ41TMsk
+-- Voter v0.3a (AO 2.0): aE9x2ta9HRCYeQgP3GRBfLGhGNVj9Im3rv02r3oXCGk
 -- TRUNK: wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ
 -- .load ./process/voter.lua
 -- Send({ Target=ao.id, Action="Ping" })
@@ -322,6 +323,57 @@ Handlers.add(
 
     end
 )
+
+-- Handlers.add("Ping", 
+--     function(m)
+--         Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Balance", Recipient="eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"})
+--         local res = Receive()
+--         print("" .. res)
+--     end
+-- )
+
+-- Handlers.add('boom', 
+--   function(msg)
+--     Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Balance", Recipient="eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"})
+--         local res = Receive()
+--         print("" .. res)
+--         msg.reply(res.Data)
+--   end
+-- )
+
+Handlers.add("Tester-Function", "Test", function (msg)
+    -- Send({Target = ao.id, Data = "Hello"})
+    -- local res = Receive({Data = "Hello"})
+    -- print(res.Data)
+    Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Balance", Recipient="eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"})
+    local res = Receive( {Action="Balance"} )
+    print(res.Data)
+end)
+
+Handlers.add("Tester-Staker", "Staker", function (msg)
+    Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Stakers"})
+    local res = Receive( {Action="Stakers"} )
+    -- jsonData = json.encode(res.Data)
+    print(res.Data)
+end)
+
+
+Handlers.add("Greeting-Name", { Action = "Greeting"}, function (msg)
+    msg.reply({Data = "Hello " .. msg.Data or "bob"})
+    print('server: replied to ' .. msg.Data or "bob")
+end)
+
+-- Working w/ v0.2a 
+-- Handlers.prepend( "Ping",.load ./process/voter.lua
+--   Handlers.utils.hasMatchingTag("Action", "Ping"),
+--   function(m)
+
+--     Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Balance", Recipient="eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"})
+--     local res = Receive()
+--     print("" .. res)
+
+--   end
+-- )
 
 -- ToDo:
 -- Remove Project By Admin Handler (make sure its this ao process)
