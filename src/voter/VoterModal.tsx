@@ -170,7 +170,7 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
           <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address}
             setIsOpen={setIsOpen}/>
 
-          <button className="bg-[#2F80ED] text-white rounded-lg p-2 z-10" 
+          <button className="bg-[#12121C] text-white rounded-lg p-2 z-10 hover:bg-slate-50 focus:outline-none hover:text-black" 
               onClick={(e) => {
                   e.stopPropagation();
                   onAddProjectOpen();

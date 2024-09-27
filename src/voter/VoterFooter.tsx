@@ -61,6 +61,11 @@ const VoterFooter: React.FC<VoterFooterProps> = ({ isModalOpen, setVoterModalOpe
       onClick={onOpenVoterModal}
       className="absolute bottom-0 right-0 bg-[#1A1B2D] text-white py-2 px-6 rounded-tl-lg flex items-center shadow-lg"
     >
+
+      {topProjects.length === 0 && <>
+        <p className="text-sm font-bold">Loading... </p>
+      </> }
+
       {topProjects.length > 0 && topProjects[currentProjectIndex] && (
         <>
           <img
@@ -73,7 +78,10 @@ const VoterFooter: React.FC<VoterFooterProps> = ({ isModalOpen, setVoterModalOpe
             <p className="text-xs">{topProjects[currentProjectIndex].SiteURL}</p>
           </div>
         </>
-      )}
+      )} 
+
+      
+
     </footer>
   );
 };

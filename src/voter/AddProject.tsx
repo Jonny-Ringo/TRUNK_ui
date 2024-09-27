@@ -170,22 +170,8 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
         
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="p-4">
+                
                 { isLoading ? LoadingRenderer() : MainRenderer() }
-
-                {/* <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={ () => {SendTrunk( "10", address, "EQ7Tnk_FuAAeIkax8-JlBxeMtgc6mrNRqL6opiqWLos" ); } }>
-                    Send 1 TRUNK
-                </button> */}
-
-                {/* <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={ () => {GetProjects(); } }>
-                    Get-Projects
-                </button> */}
-
-                {/* <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={ () => {CheckIsProjectStaker(); } }>
-                    Check Project Staker
-                </button> */}
 
             </div>
         </Modal>

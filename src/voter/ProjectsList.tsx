@@ -47,8 +47,8 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
 
     const showFail = () => {
         Swal.fire({
-          title: 'Fail!',
-          text: 'Project Not Added',
+          title: 'Vote Cancelled',
+          text: 'Vote Not Submitted',
           color: "white",
           icon: 'error',
           confirmButtonText: 'Done',
@@ -127,33 +127,59 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
                 <h1 className="text-lg text-center font-semibold text-gray-900 dark:text-white">AO Project Leaderboard</h1>
             </div>
 
-            {Projects.length > 0 && Projects.map((project, index) => (
-                <li key={index} className="pt-3 pb-3 sm:pt-4 sm:pb-4">
-                    
-                        <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                            <div className="flex-shrink-0">
-                                
-                            <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">
-                                <img className="w-8 h-8 rounded-full" src={project.IconURL} alt={project.Name} />
-                            </a>
+            {Projects.length === 0 && <>
+                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                    No Projects Found
+                </p>
+            </>}
 
-                            </div>
-                            <div className="flex-1 min-w-0" onClick={() => handleVote(project)} >
-                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                    {project.Name}
-                                </p>
-                                <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                    {FormatStake(project.totalVotes)} | {project.Owner}
-                                </p>
-                                
-                            </div>
-                            <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                #{index +1}
-                            </div>
-                        </div>
-                    
-                </li>
-            ))}
+        {Projects.length > 0 && Projects.map((project, index) => (
+
+            <li key={index} className="pt-3 pb-3 sm:pt-4 sm:pb-4">
+            <div className="flex items-center space-x-4 rtl:space-x-reverse">
+
+                {/* Project Index */}
+                <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                    #{index + 1}
+                </div>
+                
+                {/* Project Icon */}
+                <div className="flex-shrink-0">
+                    <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">
+                        <img className="w-12 h-12 rounded-full" src={project.IconURL} alt={project.Name} />
+                    </a>
+                </div>
+
+                {/* Project Details */}
+                <div className="flex-1 min-w-0" >
+                
+                {/* Project Name */}
+                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                    {project.Name}
+                </p>
+
+                    {/* Vote Info and Button in a Single Row */}
+                    <div className="flex items-center mt-1">
+                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                            {FormatStake(project.totalVotes)} | {project.Owner}
+                        </p>
+                        <button
+                            className="ml-4 px-4 py-1 bg-[#9ECBFF] text-white text-sm font-semibold rounded-md hover:bg-slate-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleVote(project);
+                            }}
+                        >
+                            Vote
+                        </button>
+                    </div>
+                </div>
+
+                        
+            </div>
+            </li>
+        ))}
+
         </ul>
         </> }
     </div>
