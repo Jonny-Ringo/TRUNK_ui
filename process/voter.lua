@@ -99,35 +99,51 @@ local function findProjectByID(id)
     return nil
 end
 
-function RegisterVote(project, voterAddress, voterAmount)
-    if project and voterAddress and voterAmount then
-        if not ProjectVotes[project.ID] then
-            ProjectVotes[project.ID] = {}
-        end
-        
-        local votesForProject = ProjectVotes[project.ID]
-        
-        if votesForProject[voterAddress] then
-            votesForProject[voterAddress].amount = votesForProject[voterAddress].amount + voterAmount
-            
-            if votesForProject[voterAddress].amount <= 0 then
-                votesForProject[voterAddress] = nil
-                print("Removed voter " .. voterAddress .. " due to non-positive vote amount.")
-            else
-                print("Updated voter " .. voterAddress .. " with new amount: " .. votesForProject[voterAddress].amount)
-            end
-        else
-            votesForProject[voterAddress] = {
-                address = voterAddress,
-                amount = voterAmount
-            }
-            print("Added new voter " .. voterAddress .. " with amount: " .. voterAmount)
-        end
-        
-        return true
-    else
+function RegisterVote(projectId, voterAddress, voterAmount)
+
+    print( "RegisterVote" )
+
+    -- Convert projectId and voterAmount to numbers
+    local numericProjectId = tonumber(projectId)
+    local numericVoterAmount = tonumber(voterAmount)
+
+    print( "Project ID: " .. numericProjectId .. " Voter Amount: " .. numericVoterAmount )
+
+    if not numericProjectId or not numericVoterAmount then
+        print("Error: Invalid projectId or voterAmount. Registration failed.")
         return false
     end
+
+    -- Flag to track if the vote was updated
+    local voteUpdated = false
+
+    -- Iterate through ProjectVotes to find an existing vote by voterAddress
+    for _, vote in ipairs(ProjectVotes) do
+
+        print( "Vote Owner: " .. vote.Owner .. " vs Voter Address: " .. voterAddress )
+        if vote.Owner == voterAddress then
+            print("Existing vote found for " .. voterAddress)
+            -- Existing vote found, update Stake and ID
+            vote.Stake = numericVoterAmount
+            vote.ID = numericProjectId
+            voteUpdated = true
+            print("Vote updated for " .. voterAddress .. ". New Stake: " .. vote.Stake .. ", New Project ID: " .. vote.ID)
+            break
+        end
+    end
+
+    print( "Vote Updated: " .. tostring(voteUpdated) )
+
+    -- If no existing vote found, add a new vote entry
+    if not voteUpdated then
+
+        print( "Adding new vote" )
+        local newVote = InitNewVote(voterAddress, numericVoterAmount, numericProjectId)
+        table.insert(ProjectVotes, newVote)
+        print("New vote added for " .. voterAddress .. ". Stake: " .. newVote.Stake .. ", Project ID: " .. newVote.ID)
+    end
+
+    return true -- Indicate success
 end
 
 function Test( number )
@@ -283,20 +299,20 @@ Handlers.add(
         elseif actionType == "VOTE" then
             print("New Vote: " .. projectName .. " Id: " .. voteID)
             
-            local project = findProjectByID(voteID)
+            -- local project = findProjectByID(voteID)
             
-            if project then
-                local success, voteResult = pcall(RegisterVote, project, sender, quantity)
-                if success and voteResult then
-                    Handlers.utils.reply("Vote Successfully Registered")(msg)
-                else
-                    print("Error registering vote: " .. (voteResult or "Unknown Error"))
-                    Handlers.utils.reply("Vote Registration Failed")(msg)
-                end
-            else
-                print("Project with ID " .. voteID .. " not found.")
-                Handlers.utils.reply("Project Not Found")(msg)
-            end
+            -- if project then
+            --     local success, voteResult = pcall(RegisterVote, project, sender, quantity)
+            --     if success and voteResult then
+            --         Handlers.utils.reply("Vote Successfully Registered")(msg)
+            --     else
+            --         print("Error registering vote: " .. (voteResult or "Unknown Error"))
+            --         Handlers.utils.reply("Vote Registration Failed")(msg)
+            --     end
+            -- else
+            --     print("Project with ID " .. voteID .. " not found.")
+            --     Handlers.utils.reply("Project Not Found")(msg)
+            -- end
         else
             print("Unhandled Action Type: " .. actionType)
             Handlers.utils.reply("Unknown Action Type")(msg)
@@ -386,15 +402,16 @@ end)
 
 Handlers.add("Project-Vote", "Vote", function (msg)
     
-    local voteID = tonumber(msg["ID"]) or 0
-    local sender = msg.From or "Unknown Sender"
-    print("Voter: " .. sender .. " VoteID: " .. voteID) 
+    local projectId = tonumber(msg["ID"]) or 0
+    local address = msg.From or "Unknown Sender"
+    print("Voter: " .. address .. " ProjectID: " .. projectId) 
 
-    Send({ Target=TRUNK, Action="Balance", Recipient=sender, Sender=ao.id })
+    Send({ Target=TRUNK, Action="Balance", Recipient=address, Sender=ao.id })
     local res = Receive( { Target=ao.id, From=TRUNK} )
     print(res.Data)
     
-    Test( res.Data )
+    -- Test( res.Data )
+    RegisterVote(projectId, address, res.Data)
 
     -- Send({Target = ao.id, Data = "53", Shit="Fuck" })
     -- local res = Receive({Shit = "Fuck"})
