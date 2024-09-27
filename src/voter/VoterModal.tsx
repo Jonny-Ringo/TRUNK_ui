@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { dryrun, message, createDataItemSigner, result  } from "@permaweb/aoconnect";
 import { PermissionType } from 'arconnect';
-import { SendVoteForProject, GetProjects } from '../app_wheel/MiscTools';
+import { GetProjects } from '../app_wheel/MiscTools';
 import ProjectsList from './ProjectsList';
 import AddProject from './AddProject';
 import { useGlobalContext } from '../GlobalProvider';
@@ -34,7 +34,7 @@ interface VoterModalProps {
 }
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"; //OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww
-const VOTER = "aE9x2ta9HRCYeQgP3GRBfLGhGNVj9Im3rv02r3oXCGk"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE" //aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
+const VOTER = "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE" //aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
 
 const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) => {
 
@@ -110,8 +110,9 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
       };
   
       SortProjects();
-
     }
+
+    
 
     useEffect(() => {
         GetAllProjects();
@@ -194,6 +195,8 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
             >
                 Add Project
             </button>
+
+
         </div>
 
 

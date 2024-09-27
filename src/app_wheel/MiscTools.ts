@@ -2,7 +2,7 @@ import { dryrun, message, createDataItemSigner, result } from "@permaweb/aoconne
 import { PermissionType } from 'arconnect';
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
-const VOTER = "aE9x2ta9HRCYeQgP3GRBfLGhGNVj9Im3rv02r3oXCGk"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
+const VOTER = "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
@@ -576,4 +576,57 @@ export const SendVoteForProject = async ( sender : string, name : string, id : s
     } catch (error) {
         return "Error";
     }
+};
+
+// Send({ Target = ao.id, Action = "Staker" })
+export const VoteForProject = async ( projectId: string ) => { 
+    console.log("VoteForProject...");
+
+    try {
+        const getResult = await message({
+            process: VOTER,
+            tags: [
+                { name: 'Action', value: 'Vote' },
+                { name: 'ID', value: projectId },
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        const { Messages, Error } = await result({
+            message: getResult,
+            process: VOTER,
+        });
+        if (Error) {
+            console.log("Error:" + Error);
+            return "Error:" + Error;
+        }
+        if (!Messages || Messages.length === 0) {
+            console.log("No messages were returned from ao. Please try later.");
+            return "No messages were returned from ao. Please try later."; 
+        }
+        
+        console.log('Success: ', Messages[0]);
+
+        return Messages[0].Data; // Note: this is only sending the Data of the msg
+    } catch (error) {
+        console.log('There was an error adding project: ' + error);
+        return "Error";
+    }
+
+    // try {
+    //     const result = await dryrun({
+    //         process: VOTER,
+    //         tags: [
+    //             { name: 'Action', value: 'Staker' },
+    //         ],
+    //         signer: createDataItemSigner(window.arweaveWallet),
+    //     });
+    //     if (result) {
+    //         console.log("Staker Result: " , result.Messages[0] );
+    //         return result.Messages[0];
+    //       } else {
+    //         console.log("Got no response from dryrun!")
+    //       }
+    // } catch (error) {
+    //     return "Error";
+    // }
 };

@@ -1,15 +1,16 @@
 local json = require("json")
 
-local Projects = Projects or {}
-local ProjectStakers = ProjectStakers or {}
-local ProjectIdCounter = ProjectIdCounter or 0
-local ProjectVotes = ProjectVotes or {}
+Projects = Projects or {}
+ProjectStakers = ProjectStakers or {}
+ProjectIdCounter = ProjectIdCounter or 0
+ProjectVotes = ProjectVotes or {}
 
 local TRUNK = TRUNK or "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"
 
 -- VOTER v0.1a: 7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE
 -- VOTER v0.2a (AO 2.0 Upgrade): h_fyEP9EAj84749UohXWVmEUH24OXgG1t2qPQ41TMsk
 -- Voter v0.3a (AO 2.0): aE9x2ta9HRCYeQgP3GRBfLGhGNVj9Im3rv02r3oXCGk
+-- Voter v0.4a (AO 2.0): FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4
 -- TRUNK: wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ
 -- .load ./process/voter.lua
 -- Send({ Target=ao.id, Action="Ping" })
@@ -127,6 +128,11 @@ function RegisterVote(project, voterAddress, voterAmount)
     else
         return false
     end
+end
+
+function Test( number )
+    print("Test: " .. number)
+    table.insert( ProjectVotes, tonumber(number) )
 end
 
 
@@ -342,25 +348,83 @@ Handlers.add(
 -- )
 
 Handlers.add("Tester-Function", "Test", function (msg)
-    -- Send({Target = ao.id, Data = "Hello"})
-    -- local res = Receive({Data = "Hello"})
-    -- print(res.Data)
-    Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Balance", Recipient="eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"})
-    local res = Receive( {Action="Balance"} )
+    Send({Target = ao.id, Data = "53", Shit="Fuck" })
+    local res = Receive({Shit = "Fuck"})
     print(res.Data)
+
+    Test( tonumber(res.Data) )
+    
+
+    -- local sender = msg.From
+    -- print("Sender: " .. sender)
+
+    -- Send({ Target=TRUNK, Action="Balance", Recipient=msg.From})
+    -- local res = Receive( {Action="Balance"} )
+    -- print( "Balance: ", res.Data)
+
+    -- msg.forward(sender, { Data = res.Data})
+    -- msg.reply(res.Data)
 end)
 
 Handlers.add("Tester-Staker", "Staker", function (msg)
-    Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Stakers"})
+    local sender = msg.From
+    print("Sender: " .. sender)
+    Send({ Target=TRUNK, Action="Stakers"})
     local res = Receive( {Action="Stakers"} )
-    -- jsonData = json.encode(res.Data)
-    print(res.Data)
+    jsonData = json.encode(res.Data)
+    print(jsonData)
+    Send({ Target=sender, Action="Stakers", Data ="Hello" })
+    -- msg.forward(sender, { Data = jsonData})
+    msg.reply(jsonData)
 end)
 
 
 Handlers.add("Greeting-Name", { Action = "Greeting"}, function (msg)
     msg.reply({Data = "Hello " .. msg.Data or "bob"})
     print('server: replied to ' .. msg.Data or "bob")
+end)
+
+Handlers.add("Project-Vote", "Vote", function (msg)
+    
+    local voteID = tonumber(msg["ID"]) or 0
+    local sender = msg.From or "Unknown Sender"
+    print("Voter: " .. sender .. " VoteID: " .. voteID) 
+
+    Send({ Target=TRUNK, Action="Balance", Recipient=sender, Sender=ao.id })
+    local res = Receive( { Target=ao.id, From=TRUNK} )
+    print(res.Data)
+    
+    Test( res.Data )
+
+    -- Send({Target = ao.id, Data = "53", Shit="Fuck" })
+    -- local res = Receive({Shit = "Fuck"})
+    -- print(res.Data)
+
+    -- Test( tonumber(res.Data) )
+
+    -- Test( res.Data )
+
+    -- local quantity = res.Data or 0
+
+    
+
+    -- table.insert(ProjectVotes, quantity )
+    
+    -- local project = findProjectByID(voteID)
+            
+    -- if project then
+    --     local success, voteResult = pcall(RegisterVote, project, sender, quantity)
+    --     if success and voteResult then
+    --         print("Vote Successfully Registered: " .. quantity .. " for " .. project.Name)
+    --     else
+    --         print("Error registering vote: " .. (voteResult or "Unknown Error"))
+    --     end
+    -- else
+    --     print("Project with ID " .. voteID .. " not found.")
+    -- end
+    
+    -- print( "Balance: ", res.Data)
+
 end)
 
 -- Working w/ v0.2a 

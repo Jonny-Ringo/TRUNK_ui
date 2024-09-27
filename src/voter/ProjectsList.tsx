@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SendVoteForProject } from '../app_wheel/MiscTools';
+import { SendVoteForProject, VoteForProject } from '../app_wheel/MiscTools';
 import { useGlobalContext } from '../GlobalProvider';
 import Swal from 'sweetalert2';
 
@@ -78,6 +78,7 @@ function ProjectsList ( { Projects , setIsOpen }: ProjectsListProps ) {
             if (result.isConfirmed && project) {
                 // User clicked 'Yes, Vote!'
                 // showSuccess(project);
+
                 SubmitNewVote( project );
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // User clicked 'No, Cancel' or dismissed the modal
@@ -92,7 +93,8 @@ function ProjectsList ( { Projects , setIsOpen }: ProjectsListProps ) {
         console.log("Voting for: ", project.ID);
 
         try {
-            const result = await SendVoteForProject( ADDRESS, project.Name, project.ID.toString() );
+            // const result = await SendVoteForProject( ADDRESS, project.Name, project.ID.toString() );
+            const result = await VoteForProject( project.ID.toString() );
             if( result === "Success" ) {
                 console.log("Vote Success");
                 showSuccess(project);
