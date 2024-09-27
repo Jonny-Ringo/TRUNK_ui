@@ -27,6 +27,25 @@ interface Tag {
     value: string;
 }
 
+interface Project {
+    ID: number;
+    Name: string;
+    SiteURL: string;
+    IconURL: string;
+    Stake: number;
+    Owner: string;
+  }
+
+  interface ProjectWithVotes extends Project {
+    totalVotes: number;
+  }
+  
+  interface ProjectVote {
+    Stake: number;
+    Owner: string;
+    ID: number;
+  }
+
 export const GetAddressStakedTrunkAmount = async (address: string): Promise<number> => {
     try {
         console.log("Getting stakers...");
@@ -385,6 +404,27 @@ export const SendNewProjectWithPayment = async ( sender : string, name: string, 
     }
 };
 
+// Send({ Target = ao.id, Action = "GetVotes" })
+export const GetProjectVotes = async () => { 
+    console.log("GetVotes...");
+    try {
+        const result = await dryrun({
+            process: VOTER,
+            tags: [
+                { name: 'Action', value: 'GetVotes' },
+            ],
+            signer: createDataItemSigner(window.arweaveWallet),
+        });
+        if (result) {
+            return result.Messages[0].Data;
+          } else {
+            console.log("Got no response from dryrun!")
+          }
+    } catch (error) {
+        return "Error";
+    }
+};
+
 // Send({ Target = ao.id, Action = "Get-Project" })
 export const GetProjects = async () => { 
     console.log("Get-Project...");
@@ -630,3 +670,30 @@ export const VoteForProject = async ( projectId: string ) => {
     //     return "Error";
     // }
 };
+
+export const SortProjectsByVotes = (
+    projects: Project[],
+    projectVotes: ProjectVote[]
+  ): ProjectWithVotes[] => { 
+      // Create a mapping from Project ID to total stake
+      const stakeMap: { [key: number]: number } = {};
+  
+      projectVotes.forEach((vote) => {
+        if (vote.ID in stakeMap) {
+          stakeMap[vote.ID] += vote.Stake;
+        } else {
+          stakeMap[vote.ID] = vote.Stake;
+        }
+      });
+    
+      // Augment each project with its totalVotes (sum of stakes)
+      const projectsWithVotes: ProjectWithVotes[] = projects.map((project) => ({
+        ...project,
+        totalVotes: stakeMap[project.ID] || 0,
+      }));
+    
+      // Sort the projects based on totalVotes in descending order
+      projectsWithVotes.sort((a, b) => b.totalVotes - a.totalVotes);
+    
+      return projectsWithVotes;
+  };

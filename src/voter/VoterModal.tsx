@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { dryrun, message, createDataItemSigner, result  } from "@permaweb/aoconnect";
 import { PermissionType } from 'arconnect';
-import { GetProjects } from '../app_wheel/MiscTools';
+import { GetProjects, GetProjectVotes, SortProjectsByVotes } from '../app_wheel/MiscTools';
 import ProjectsList from './ProjectsList';
 import AddProject from './AddProject';
 import { useGlobalContext } from '../GlobalProvider';
+import Spinner from '../app_wheel/Spinner';
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',
@@ -25,6 +26,13 @@ interface ProjectInfo {
     Stake: number;
     Owner: string;
     ID : number;
+    totalVotes: number;
+}
+
+interface ProjectVote {
+  Stake: number;
+  Owner: string;
+  ID : number;
 }
 
 interface VoterModalProps {
@@ -40,12 +48,17 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
 
     const {
       PROJECTS, 
-      setPROJECTS
+      setPROJECTS,
+      VOTES,
+      setVOTES
     } = useGlobalContext();
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [loadMessage, setLoadMessage] = useState('');
+
     const [Projects, setProjects] = useState<ProjectInfo[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [addProjectOpen, setAddProjectOpen] = useState(false);
+    const [projectsLoaded, setProjectsLoaded] = useState(false);
 
     useEffect(() => {
         console.log("VoterModal Address: ", address);
@@ -56,9 +69,21 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
         console.log("Voter Modal is closed");
       } else {
         console.log("Voter Modal is open");
+        setIsLoading(true);
         GetAllProjects();
       }
   }, [isOpen]);
+
+  useEffect(() => {
+    
+    if( projectsLoaded ) {
+        const sortedByVote = SortProjectsByVotes(PROJECTS, VOTES); console.log("Sorted By Vote: ", sortedByVote);
+        setProjects(sortedByVote);
+    } else {
+        setProjects([]);
+    }
+
+  }, [projectsLoaded]);
 
     useEffect(() => {
 
@@ -84,14 +109,6 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
             
             const allStakers: { [key: string]: StakerInfo } = json;
             console.log("All Stakers: ", allStakers);
-
-            // if (allStakers.hasOwnProperty("eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE")) {
-            //     console.log("You have staked: ", allStakers["eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"].amount);
-            //     return parseFloat(allStakers["eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"].amount) / 1000;
-            // } else {
-            //     console.log("No staked amount found for the provided address.");
-            //     return 0;
-            // }
         };
     
         setupIframe();
@@ -99,64 +116,31 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
 
     const GetAllProjects = async () => {
 
-      const SortProjects = async () => {
-          const processResponse = await GetProjects();
+      const fetchProjects = async () => {
 
-          console.log("Process Response: ", processResponse);
+        setProjects([]); // Clear Projects
+        setProjectsLoaded(false);
+
+          const processResponse = await GetProjects();
+          // console.log("Process Response: ", processResponse);
 
           const json: ProjectInfo[] = JSON.parse(processResponse);
-          setProjects(json);
-          setPROJECTS(json); // Set the globals too
+          setPROJECTS(json);
       };
-  
-      SortProjects();
+
+      const fecthVotes = async () => {
+          const processResponse = await GetProjectVotes();
+          // console.log("Process Response: ", processResponse);
+
+          const json: ProjectVote[] = JSON.parse(processResponse);
+          setVOTES(json);
+          setProjectsLoaded(true);
+          setIsLoading(false);
+      };
+
+      fetchProjects();
+      fecthVotes();
     }
-
-    
-
-    useEffect(() => {
-        GetAllProjects();
-    }, []);
-
-    useEffect(() => {
-        // GetTopProject();
-        console.log("Projects: ", Projects);
-    }, [Projects]);
-
-    const GetTopProject = () => {
-        if( Projects.length > 0 ) {
-            const topProject = Projects[0];
-            console.log("Top Project: ", topProject);
-        }
-    };
-
-    // useEffect(() => {
-
-    //     const getWebsite = async () => {
-    //       try {
-    //         const result = await dryrun({
-    //           process: TRUNK,
-    //           tags: [{ name: 'Action', value: "Get-Frame" }]
-    //         });
-    //         if (result) {
-    //           return result.Messages[0].Data;
-    //         } else {
-    //           console.log("Got no response from dryrun!")
-    //           return INITIAL_FRAME
-    //         }
-    //       } catch (e) {
-    //         console.log(e);
-    //       }
-    //     };
-    
-    //     const setupIframe = async () => {
-    //       const processResponse = await getWebsite();
-    //       const url = `https://arweave.net/${processResponse}`;
-    //       console.log("URL", url);
-    //     };
-    
-    //     setupIframe();
-    //   }, []);
 
     if (!isOpen) return null;
 
@@ -168,10 +152,9 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
       setAddProjectOpen(true);
   };
 
+  function LoadedModalRender() {
     return (
-      <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex" onClick={onClose}>
-        <div className="relative p-6 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10" onClick={(e) => e.stopPropagation()}>
-
+        <>
           <button 
               onClick={onClose} 
               className="absolute top-3 right-3 text-gray-400 hover:text-white focus:outline-none"
@@ -182,26 +165,60 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
               </svg>
           </button>
 
-        <ProjectsList Projects={Projects} setIsOpen={setIsOpen} />
+          <ProjectsList Projects={Projects} setProjects={setProjects} setIsOpen={setIsOpen} />
 
-            <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address}
-             setIsOpen={setIsOpen}/>
+          <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address}
+            setIsOpen={setIsOpen}/>
 
-            <button className="bg-[#2F80ED] text-white rounded-lg p-2 z-10" 
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onAddProjectOpen();
-                }}
-            >
-                Add Project
-            </button>
+          <button className="bg-[#2F80ED] text-white rounded-lg p-2 z-10" 
+              onClick={(e) => {
+                  e.stopPropagation();
+                  onAddProjectOpen();
+              }} >
 
+              Add Project
+          </button>
+        </>
+      );
+  }
+
+  function LoadingRenderer() {
+      return (
+        <>
+
+          <Spinner />
+
+          <div className="flex flex-col items-center justify-center"> {loadMessage} </div> 
+
+        </>
+      );
+  }
+
+  function DisconnectedRenderer() {
+      return (
+        <>
+          <div className="flex flex-col items-center justify-center"> Disconnected </div> 
+        </>
+      );
+  }
+
+  function MainRenderer() {
+      return (
+      <>
+          { address === "" ? DisconnectedRenderer() :  LoadedModalRender()}
+      </>
+      );
+  }
+
+
+    return (
+      <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex" onClick={onClose}>
+        <div className="relative p-6 bg-[#1A1B2D] w-full max-w-md m-auto flex-col flex rounded-lg border-8 border-[#12121C] z-10" onClick={(e) => e.stopPropagation()}>
+
+        { isLoading ? LoadingRenderer() : MainRenderer() }
 
         </div>
-
-
-    </div>
-
+      </div>
     );
   }
   

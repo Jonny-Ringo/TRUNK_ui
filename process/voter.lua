@@ -230,8 +230,6 @@ local function tableToString(tbl)
 end
 
 -- Send({ Target = ao.id, Action = "Get-Project" })
-local json = require("json")
-
 Handlers.add(
     "Get-Project",
     Handlers.utils.hasMatchingTag("Action", "Get-Project"),
@@ -264,6 +262,20 @@ Handlers.add(
             jsonData = '{"error": "No Projects available"}'
         end
         print("Top Projects JSON: " .. jsonData)
+        Handlers.utils.reply(jsonData)(msg)
+    end
+)
+
+-- Send({ Target = ao.id, Action = "GetVotes" })
+Handlers.add("Get-Votes", "GetVotes", function (msg)
+        local jsonData
+        if ProjectVotes then
+            jsonData = json.encode(ProjectVotes)
+        else
+            jsonData = '{"error": "No ProjectVotes available"}'
+        end
+        
+        print("ProjectVotes JSON: " .. jsonData)
         Handlers.utils.reply(jsonData)(msg)
     end
 )

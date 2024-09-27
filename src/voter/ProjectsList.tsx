@@ -10,15 +10,17 @@ interface ProjectInfo {
     Stake: number;
     Owner: string;
     ID: number;
+    totalVotes: number;
   }
 
 interface ProjectsListProps {
     Projects: ProjectInfo[];
+    setProjects: React.Dispatch<React.SetStateAction<ProjectInfo[]>>;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
-function ProjectsList ( { Projects , setIsOpen }: ProjectsListProps ) {
+function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProps ) {
 
     const {
         ADDRESS
@@ -101,9 +103,14 @@ function ProjectsList ( { Projects , setIsOpen }: ProjectsListProps ) {
             } else {
               console.log("Vote Fail");
             }
-  
+
+            setProjects([]);
+            setIsOpen(false);
         } catch (error) {
             console.log('Error: ' + error);
+
+            setProjects([]);
+            setIsOpen(false);
         }
     }
 
@@ -136,7 +143,7 @@ function ProjectsList ( { Projects , setIsOpen }: ProjectsListProps ) {
                                     {project.Name}
                                 </p>
                                 <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                    {FormatStake(project.Stake)} | {project.Owner}
+                                    {FormatStake(project.totalVotes)} | {project.Owner}
                                 </p>
                                 
                             </div>

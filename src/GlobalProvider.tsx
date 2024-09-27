@@ -43,6 +43,10 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     console.log("PROJECTS: ", PROJECTS);
   }, [PROJECTS]);
 
+  useEffect(() => {
+    console.log("VOTES: ", VOTES);
+  }, [VOTES]);
+
   return (
     <GlobalContext.Provider
       value={{
