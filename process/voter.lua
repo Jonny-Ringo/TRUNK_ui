@@ -101,13 +101,10 @@ end
 
 function RegisterVote(projectId, voterAddress, voterAmount)
 
-    print( "RegisterVote" )
-
-    -- Convert projectId and voterAmount to numbers
     local numericProjectId = tonumber(projectId)
     local numericVoterAmount = tonumber(voterAmount)
 
-    print( "Project ID: " .. numericProjectId .. " Voter Amount: " .. numericVoterAmount )
+    print( "RegisterVote: " .. voterAddress ..  "Project ID: " .. numericProjectId .. " Voter Amount: " .. numericVoterAmount )
 
     if not numericProjectId or not numericVoterAmount then
         print("Error: Invalid projectId or voterAmount. Registration failed.")
@@ -419,10 +416,11 @@ Handlers.add("Project-Vote", "Vote", function (msg)
     print("Voter: " .. address .. " ProjectID: " .. projectId) 
 
     Send({ Target=TRUNK, Action="Balance", Recipient=address, Sender=ao.id })
-    local res = Receive( { Target=ao.id, From=TRUNK} )
-    print(res.Data)
+    local res = Receive( { Target=ao.id, From=TRUNK, Account=address} )
+    local balance = res.Data or 0
+    print(balance .. " for " .. address)
     
-    -- Test( res.Data )
+    -- Test( res.Data )s
     RegisterVote(projectId, address, res.Data)
 
     -- Send({Target = ao.id, Data = "53", Shit="Fuck" })
