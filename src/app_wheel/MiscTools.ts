@@ -425,14 +425,14 @@ export const GetProjectVotes = async () => {
     }
 };
 
-// Send({ Target = ao.id, Action = "Get-Project" })
+// Send({ Target = ao.id, Action = "Get-Sorted-Project" })
 export const GetProjects = async () => { 
-    console.log("Get-Project...");
+    console.log("Get-Sorted-Project...");
     try {
         const result = await dryrun({
             process: VOTER,
             tags: [
-                { name: 'Action', value: 'Get-Project' },
+                { name: 'Action', value: 'Get-Sorted-Project' },
             ],
             signer: createDataItemSigner(window.arweaveWallet),
         });

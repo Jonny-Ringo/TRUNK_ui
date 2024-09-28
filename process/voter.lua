@@ -304,6 +304,70 @@ Handlers.add(
     end
 )
 
+-- Send({ Target = ao.id, Action = "Get-Sorted-Project" })
+Handlers.add(
+    "Get-Sorted-Project",
+    Handlers.utils.hasMatchingTag("Action", "Get-Sorted-Project"),
+    function (msg)
+        local jsonData
+
+        -- Step 1: Check if the Projects table exists and has entries
+        if Projects and #Projects > 0 then
+            -- Step 2: Aggregate Stakes per Project from ProjectVotes
+            local stakeMap = {}
+            for _, vote in ipairs(ProjectVotes) do
+                local projectId = vote.ID
+                if projectId then
+                    -- Initialize or increment the stake for the project
+                    stakeMap[projectId] = (stakeMap[projectId] or 0) + vote.Stake
+                else
+                    print("Warning: Vote with missing Project ID encountered.")
+                end
+            end
+
+            -- Step 3: Create a New Table with Total Stake for Each Project
+            local projectsWithTotalStake = {}
+            for _, project in ipairs(Projects) do
+                local totalStake = stakeMap[project.ID] or 0 -- Default to 0 if no votes
+                table.insert(projectsWithTotalStake, {
+                    project = project,
+                    totalStake = totalStake
+                })
+            end
+
+            -- Step 4: Sort Projects by Total Stake in Descending Order
+            table.sort(projectsWithTotalStake, function(a, b)
+                return a.totalStake > b.totalStake
+            end)
+
+            -- Step 5: Extract the Sorted Projects and Include Stake in Each Project
+            local sortedProjects = {}
+            for _, entry in ipairs(projectsWithTotalStake) do
+                -- Clone the project table to avoid mutating the original
+                local projectWithStake = {}
+                for key, value in pairs(entry.project) do
+                    projectWithStake[key] = value
+                end
+                -- Add the totalStake as Stake in the project table
+                projectWithStake.Stake = entry.totalStake
+                table.insert(sortedProjects, projectWithStake)
+            end
+
+            -- Step 6: Encode the Sorted Projects with Stake into JSON
+            jsonData = json.encode(sortedProjects)
+        else
+            -- Handle the case where no projects are available
+            jsonData = '{"error": "No Projects available"}'
+        end
+
+        -- Debugging: Print the JSON data of sorted projects with Stake
+        print("Sorted Projects JSON: " .. jsonData)
+
+        -- Send the JSON response back to the requester
+        Handlers.utils.reply(jsonData)(msg)
+    end
+)
+
 -- Send({ Target = ao.id, Action = "Get-Top-Projects" })
 Handlers.add(
     "Get-Top-Projects",
@@ -348,25 +412,6 @@ Handlers.add(
         Handlers.utils.reply(jsonData)(msg)
     end
 )
-
--- Handlers.add(
---     "Get-Top-Projects",
---     Handlers.utils.hasMatchingTag("Action", "Get-Top-Projects"),
---     function (msg)
---         local jsonData
---         if Projects and #Projects > 0 then
---             local topProjects = {}
---             for i = 1, math.min(3, #Projects) do
---                 table.insert(topProjects, Projects[i])
---             end
---             jsonData = json.encode(topProjects)
---         else
---             jsonData = '{"error": "No Projects available"}'
---         end
---         print("Top Projects JSON: " .. jsonData)
---         Handlers.utils.reply(jsonData)(msg)
---     end
--- )
 
 -- Send({ Target = ao.id, Action = "GetVotes" })
 Handlers.add("Get-Votes", "GetVotes", function (msg)

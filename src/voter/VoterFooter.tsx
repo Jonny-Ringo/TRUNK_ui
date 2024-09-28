@@ -27,11 +27,11 @@ const VoterFooter: React.FC<VoterFooterProps> = ({ isModalOpen, setVoterModalOpe
     fetchTopProjects();
   }, []);
 
-  useEffect(() => {
-    if( topProjects.length > 0 ) {
-      console.log("Top Projects: ", topProjects);
-    }
-  }, [ topProjects ]);
+  // useEffect(() => {
+  //   if( topProjects.length > 0 ) {
+  //     console.log("Top Projects: ", topProjects);
+  //   }
+  // }, [ topProjects ]);
 
 
   useEffect(() => {

@@ -34,6 +34,10 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
         return formated;
     }
 
+    useEffect(() => {
+        console.log("Projects: ", Projects);
+    }, [Projects]);
+
     const showSuccess = ( project : ProjectInfo ) => {
 
         Swal.fire({
@@ -178,7 +182,7 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
                     {/* Vote Info and Button in a Single Row */}
                     <div className="flex items-center mt-1">
                         <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                            {FormatStake(project.totalVotes)} | {project.Owner}
+                            {FormatStake(project.Stake)} | {project.Owner}
                         </p>
                         <button
                             className="ml-4 px-4 py-1 bg-[#9ECBFF] text-white text-sm font-semibold rounded-md hover:bg-slate-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-400"

@@ -116,30 +116,42 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
 
     const GetAllProjects = async () => {
 
-      const fetchProjects = async () => {
+      setProjects([]); // Clear Projects
+      setProjectsLoaded(false);
 
-        setProjects([]); // Clear Projects
-        setProjectsLoaded(false);
+      const processResponse = await GetProjects();
+      // console.log("Process Response: ", processResponse);
 
-          const processResponse = await GetProjects();
-          // console.log("Process Response: ", processResponse);
+      const json: ProjectInfo[] = JSON.parse(processResponse);
+      setPROJECTS(json);
 
-          const json: ProjectInfo[] = JSON.parse(processResponse);
-          setPROJECTS(json);
-      };
-
-      const fecthVotes = async () => {
-          const processResponse = await GetProjectVotes();
-          // console.log("Process Response: ", processResponse);
-
-          const json: ProjectVote[] = JSON.parse(processResponse);
-          setVOTES(json);
-          setProjectsLoaded(true);
+      setProjectsLoaded(true);
           setIsLoading(false);
-      };
 
-      fetchProjects();
-      fecthVotes();
+      // const fetchProjects = async () => {
+
+      //   setProjects([]); // Clear Projects
+      //   setProjectsLoaded(false);
+
+      //     const processResponse = await GetProjects();
+      //     // console.log("Process Response: ", processResponse);
+
+      //     const json: ProjectInfo[] = JSON.parse(processResponse);
+      //     setPROJECTS(json);
+      // };
+
+      // const fecthVotes = async () => {
+      //     const processResponse = await GetProjectVotes();
+      //     // console.log("Process Response: ", processResponse);
+
+      //     const json: ProjectVote[] = JSON.parse(processResponse);
+      //     setVOTES(json);
+      //     setProjectsLoaded(true);
+      //     setIsLoading(false);
+      // };
+
+      // fetchProjects();
+      // fecthVotes();
     }
 
     if (!isOpen) return null;
