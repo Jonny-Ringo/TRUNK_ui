@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SendVoteForProject, VoteForProject } from '../app_wheel/MiscTools';
+import { SendVoteForProject, VoteForProject, GetTrunkBalance } from '../app_wheel/MiscTools';
 import { useGlobalContext } from '../GlobalProvider';
 import Swal from 'sweetalert2';
 
@@ -27,6 +27,7 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
     } = useGlobalContext();
 
     const [selectedProject, setSelectedProject] = useState<ProjectInfo | null>(null);
+    const [trunkBalance, setTrunkBalance] = useState<number>(0);
 
     function FormatStake( amount : number ) {
         const formated = amount / 1000;
@@ -37,7 +38,7 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
 
         Swal.fire({
           title: "" + project.Name,
-          text: 'You Selected this project',
+          text: `You voted ${project.Name} with your Trunk balance ${trunkBalance}`,
           color: "white",
           icon: 'success',
           confirmButtonText: 'Done',
@@ -80,8 +81,9 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
             if (result.isConfirmed && project) {
                 // User clicked 'Yes, Vote!'
                 // showSuccess(project);
-
+                
                 SubmitNewVote( project );
+                showSuccess(project);
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // User clicked 'No, Cancel' or dismissed the modal
                 showFail();
@@ -89,10 +91,21 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
         });
     };
 
+    const CallGetTrunkBalance = async () => {
+        try {
+            const balance = await GetTrunkBalance( ADDRESS );
+            setTrunkBalance( balance );
+        } catch (error) {
+            console.log('Error: ' + error);
+        }
+    }
+
     const SubmitNewVote = async ( project: ProjectInfo ) => {
 
         if( !project ) { console.log("No Project Selected"); return; }
         console.log("Voting for: ", project.ID);
+
+        CallGetTrunkBalance();
 
         try {
             // const result = await SendVoteForProject( ADDRESS, project.Name, project.ID.toString() );
@@ -117,6 +130,15 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
     useEffect(() => {
         console.log("Selected Project: ", selectedProject);
     }, [selectedProject]);
+
+    useEffect(() => {
+        console.log("Trunk Balance: ", trunkBalance);
+    }, [trunkBalance]);
+
+    useEffect(() => {
+        console.log("SetIsOpen");
+        CallGetTrunkBalance();
+    }, [setIsOpen]);
 
     return (
     <div >

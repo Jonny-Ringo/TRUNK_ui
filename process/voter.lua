@@ -420,51 +420,20 @@ Handlers.add("Project-Vote", "Vote", function (msg)
     local balance = res.Data or 0
     print(balance .. " for " .. address)
     
-    -- Test( res.Data )s
     RegisterVote(projectId, address, res.Data)
-
-    -- Send({Target = ao.id, Data = "53", Shit="Fuck" })
-    -- local res = Receive({Shit = "Fuck"})
-    -- print(res.Data)
-
-    -- Test( tonumber(res.Data) )
-
-    -- Test( res.Data )
-
-    -- local quantity = res.Data or 0
-
-    
-
-    -- table.insert(ProjectVotes, quantity )
-    
-    -- local project = findProjectByID(voteID)
-            
-    -- if project then
-    --     local success, voteResult = pcall(RegisterVote, project, sender, quantity)
-    --     if success and voteResult then
-    --         print("Vote Successfully Registered: " .. quantity .. " for " .. project.Name)
-    --     else
-    --         print("Error registering vote: " .. (voteResult or "Unknown Error"))
-    --     end
-    -- else
-    --     print("Project with ID " .. voteID .. " not found.")
-    -- end
-    
-    -- print( "Balance: ", res.Data)
-
 end)
 
--- Working w/ v0.2a 
--- Handlers.prepend( "Ping",.load ./process/voter.lua
---   Handlers.utils.hasMatchingTag("Action", "Ping"),
---   function(m)
+-- Send({ Target=ao.id, Action="GetTrunkBalance"})
+Handlers.add("Get-Trunk-Balance", "GetTrunkBalance", function (msg)
+    -- Ask the Trunk process for the msg.From balance
+    Send({ Target=TRUNK, Action="Balance", Recipient=msg.From, Sender=ao.id })
+    -- Wait till the Trunk process sends this process the "Balance" message response
+    -- Note: make sure to use the "tags" to check its the message you actually are looking for
+    local res = Receive( { Target=ao.id, From="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Account=address} )
+    -- Print the balance
+    print( "" .. msg.From .. " has " .. res.Data .. " Trunk" )
+end)
 
---     Send({ Target="wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ", Action="Balance", Recipient="eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE"})
---     local res = Receive()
---     print("" .. res)
-
---   end
--- )
 
 -- ToDo:
 -- Remove Project By Admin Handler (make sure its this ao process)

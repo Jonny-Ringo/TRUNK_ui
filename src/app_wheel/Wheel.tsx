@@ -17,7 +17,7 @@ import StakeModal from './StakeModal';
 import VoterModal from '../voter/VoterModal';
 import AddProject from '../voter/AddProject';
 import VoterFooter from '../voter/VoterFooter';
-import LeaderboardModal from '../voter/LeaderboardModal';
+import { useGlobalContext } from '../GlobalProvider';
 
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"
@@ -53,6 +53,10 @@ interface RiveEvent {
 }
 
 function Wheel () {
+
+  const {
+      setADDRESS,
+  } = useGlobalContext();
 
     const [iframeSrc, setIframeSrc] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -214,6 +218,7 @@ function Wheel () {
                 const address = await window.arweaveWallet.getActiveAddress();
                 console.log("Connected: ", address);
                 setAddress(address);
+                setADDRESS(address); // Global
                 setIsConnected(true);
               } else {
                 console.log("Not connected.");

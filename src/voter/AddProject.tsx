@@ -54,7 +54,7 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
           confirmButtonText: 'Done',
           background: '#2a2c49',
         });
-      };
+    };
 
     const showFail = () => {
         Swal.fire({
@@ -65,7 +65,7 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
           confirmButtonText: 'Done',
           background: '#2a2c49',
         });
-      };
+    };
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -132,7 +132,7 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
                 </div>
 
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Submit
+                    Submit Project 0.01 TRUNK
                 </button>
             </form>
         );

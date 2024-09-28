@@ -98,8 +98,8 @@ export const GetTrunkBalance = async (address: string): Promise<number> => {
             console.error(error);
             return 0;
         }
-    } else 
-    {
+    } else {
+        console.log("No address provided.");
         return 0;
     }
 };
