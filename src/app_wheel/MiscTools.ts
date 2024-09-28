@@ -620,14 +620,14 @@ export const SendVoteForProject = async ( sender : string, name : string, id : s
 
 // Send({ Target = ao.id, Action = "Staker" })
 export const VoteForProject = async ( projectId: string ) => { 
-    console.log("VoteForProject...");
+    console.log( "VoteForProject: " +projectId );
 
     try {
         const getResult = await message({
             process: VOTER,
             tags: [
-                { name: 'Action', value: 'Vote' },
-                { name: 'ID', value: projectId },
+                { name: 'Action', value: 'VoteMeNow' },
+                { name: 'PROJECTID', value: projectId },
             ],
             signer: createDataItemSigner(window.arweaveWallet),
         });

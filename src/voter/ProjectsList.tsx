@@ -38,7 +38,7 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
 
         Swal.fire({
           title: "" + project.Name,
-          text: `You voted ${project.Name} with your Trunk balance ${trunkBalance}`,
+          text: `You voted for ${project.Name} with your ${trunkBalance} Trunk`,
           color: "white",
           icon: 'success',
           confirmButtonText: 'Done',
@@ -63,29 +63,24 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
         console.log("Project: ", project.Name);
 
         Swal.fire({
-            title: `Vote for ${project.Name}?`,
-            text: "Are you sure you want to vote for this project?",
+            title: `Vote ${trunkBalance} Trunk for ${project.Name}?`,
+            text: `No Trunk will be removed from your wallet to vote.`,
             color: "white",
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes, Vote!',
             cancelButtonText: 'No, Cancel',
             background: '#2a2c49',
-            reverseButtons: true, // Optional: Reverses the order of buttons
-            // Custom button colors (optional)
+            reverseButtons: true,
             customClass: {
                 confirmButton: 'swal-confirm-button',
                 cancelButton: 'swal-cancel-button',
             },
         }).then((result) => {
             if (result.isConfirmed && project) {
-                // User clicked 'Yes, Vote!'
-                // showSuccess(project);
-                
                 SubmitNewVote( project );
                 showSuccess(project);
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                // User clicked 'No, Cancel' or dismissed the modal
                 showFail();
             }
         });

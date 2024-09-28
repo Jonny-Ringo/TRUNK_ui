@@ -117,9 +117,9 @@ function RegisterVote(projectId, voterAddress, voterAmount)
     -- Iterate through ProjectVotes to find an existing vote by voterAddress
     for _, vote in ipairs(ProjectVotes) do
 
-        print( "Vote Owner: " .. vote.Owner .. " vs Voter Address: " .. voterAddress )
+        -- print( "Vote Owner: " .. vote.Owner .. " vs Voter Address: " .. voterAddress )
         if vote.Owner == voterAddress then
-            print("Existing vote found for " .. voterAddress)
+            -- print("Existing vote found for " .. voterAddress)
             -- Existing vote found, update Stake and ID
             vote.Stake = numericVoterAmount
             vote.ID = numericProjectId
@@ -129,12 +129,12 @@ function RegisterVote(projectId, voterAddress, voterAmount)
         end
     end
 
-    print( "Vote Updated: " .. tostring(voteUpdated) )
+    -- print( "Vote Updated: " .. tostring(voteUpdated) )
 
     -- If no existing vote found, add a new vote entry
     if not voteUpdated then
 
-        print( "Adding new vote" )
+        -- print( "Adding new vote" )
         local newVote = InitNewVote(voterAddress, numericVoterAmount, numericProjectId)
         table.insert(ProjectVotes, newVote)
         print("New vote added for " .. voterAddress .. ". Stake: " .. newVote.Stake .. ", Project ID: " .. newVote.ID)
@@ -148,6 +148,67 @@ function Test( number )
     table.insert( ProjectVotes, tonumber(number) )
 end
 
+function RegisterVoteForProject( projectId, voterAddress )
+
+    local numericProjectId = tonumber(projectId)
+
+    print( "RegisterVote: " .. voterAddress ..  "Project ID: " .. numericProjectId )
+
+    if not numericProjectId then
+        print("Error: Invalid projectId or voterAmount. Registration failed.")
+        return false
+    end
+
+    local voteUpdated = false
+
+    for _, vote in ipairs(ProjectVotes) do
+
+        if vote.Owner == voterAddress then
+            vote.ID = numericProjectId
+            voteUpdated = true
+            print("Vote updated for " .. voterAddress .. ", New Project ID: " .. vote.ID)
+            break
+        end
+    end
+
+    if not voteUpdated then
+        local newVote = InitNewVote(voterAddress, 0, numericProjectId)
+        table.insert(ProjectVotes, newVote)
+        print("New vote added for " .. voterAddress .. ", Project ID: " .. newVote.ID)
+    end
+
+    return true
+end
+
+function RegisterBalanceForProject( voterAmount, voterAddress )
+
+    local numericVoterAmount = tonumber(voterAmount)
+
+    print( "RegisterVote: " .. voterAddress .. " Voter Amount: " .. numericVoterAmount )
+
+    if not numericVoterAmount then
+        print("Error: Invalid projectId or voterAmount. Registration failed.")
+        return false
+    end
+
+    local voteUpdated = false
+
+    for _, vote in ipairs(ProjectVotes) do
+
+        if vote.Owner == voterAddress then
+            vote.Stake = numericVoterAmount
+            voteUpdated = true
+            print("Vote updated for " .. voterAddress .. ". New Stake: " .. vote.Stake)
+            break
+        end
+    end
+
+    if not voteUpdated then
+        print("No vote found for " .. voterAddress)
+    end
+
+    return true
+end
 
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "Typr", SiteURL = "https://www.typr.day/", IconURL = "https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/3741374/179117_641860.jpg", Stake = "1000", Owner = ao.id })
 -- Send({ Target = ao.id, Action = "Add-Project", Name = "", SiteURL = "testsite.io", IconURL = "icon.xyz", Stake = "1000", Owner = ao.id })
@@ -411,16 +472,45 @@ end)
 
 Handlers.add("Project-Vote", "Vote", function (msg)
     
-    local projectId = tonumber(msg["ID"]) or 0
+    local projectId = tonumber(msg["PROJECTID"]) or 0
     local address = msg.From or "Unknown Sender"
     print("Voter: " .. address .. " ProjectID: " .. projectId) 
+
+    -- Insert the projects id into the table
+    RegisterVoteForProject(projectId, address)
 
     Send({ Target=TRUNK, Action="Balance", Recipient=address, Sender=ao.id })
     local res = Receive( { Target=ao.id, From=TRUNK, Account=address} )
     local balance = res.Data or 0
     print(balance .. " for " .. address)
+
+    -- Then insert the balance into the table
+
+    -- local anotherId = disIdBrah + 1
     
-    RegisterVote(projectId, address, res.Data)
+    -- print("Registering Vote: " .. anotherId)
+    -- RegisterVote(anotherId, address, res.Data)
+end)
+
+Handlers.add("Project-Vote-Now", "VoteMeNow", function (msg)
+    
+    local projectId = tonumber(msg["PROJECTID"]) or 0
+    local address = msg.From or "Unknown Sender"
+    print("Voter: " .. address .. " ProjectID: " .. projectId) 
+
+    -- Insert the projects id into the table
+    RegisterVoteForProject(projectId, address)
+
+    Send({ Target=TRUNK, Action="Balance", Recipient=address, Sender=ao.id })
+    local res = Receive( { Target=ao.id, From=TRUNK, Account=address} )
+    local balance = res.Data or 0
+    print(balance .. " for " .. address)
+
+    -- Then insert the balance into the table
+    RegisterBalanceForProject(balance, address)
+    
+    -- print("Registering Vote: " .. projectId)
+    -- RegisterVote(projectId, address, balance)
 end)
 
 -- Send({ Target=ao.id, Action="GetTrunkBalance"})
