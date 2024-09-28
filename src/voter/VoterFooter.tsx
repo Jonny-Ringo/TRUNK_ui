@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from '../GlobalProvider';
-import { GetTopProjects, SortProjectsByVotes } from '../app_wheel/MiscTools';
+import { GetTopProjects } from '../app_wheel/MiscTools';
 
 interface VoterFooterProps {
   isModalOpen: boolean;

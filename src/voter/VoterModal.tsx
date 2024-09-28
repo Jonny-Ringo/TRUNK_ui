@@ -26,7 +26,6 @@ interface ProjectInfo {
     Stake: number;
     Owner: string;
     ID : number;
-    totalVotes: number;
 }
 
 interface ProjectVote {
@@ -77,8 +76,8 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
   useEffect(() => {
     
     if( projectsLoaded ) {
-        const sortedByVote = SortProjectsByVotes(PROJECTS, VOTES); console.log("Sorted By Vote: ", sortedByVote);
-        setProjects(sortedByVote);
+        // const sortedByVote = SortProjectsByVotes(PROJECTS, VOTES); console.log("Sorted By Vote: ", sortedByVote);
+        setProjects(PROJECTS);
     } else {
         setProjects([]);
     }

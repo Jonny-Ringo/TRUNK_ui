@@ -10,7 +10,6 @@ interface ProjectInfo {
     Stake: number;
     Owner: string;
     ID: number;
-    totalVotes: number;
   }
 
 interface ProjectsListProps {
