@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from '../GlobalProvider';
-import { GetTopProjects } from '../app_wheel/MiscTools';
+import { GetTopProjects, SortProjectsByVotes } from '../app_wheel/MiscTools';
 
 interface VoterFooterProps {
   isModalOpen: boolean;
@@ -16,10 +16,11 @@ interface ProjectInfo {
 }
 
 const VoterFooter: React.FC<VoterFooterProps> = ({ isModalOpen, setVoterModalOpen }) => {
-  const { MODAL_INDEX, setMODAL_INDEX } = useGlobalContext();
+  const { MODAL_INDEX, setMODAL_INDEX, PROJECTS, VOTES } = useGlobalContext();
 
   // State to store the index of the current image
   const [currentProjectIndex, setCurrentProjectIndex] = useState<number>(0);
+  const [allProjects, setAllProjects] = useState<ProjectInfo[]>([]);
   const [topProjects, setTopProjects] = useState<ProjectInfo[]>([]);
 
   useEffect(() => {
@@ -32,12 +33,28 @@ const VoterFooter: React.FC<VoterFooterProps> = ({ isModalOpen, setVoterModalOpe
     }
   }, [ topProjects ]);
 
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchTops();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchTops = async () => {
+    try {
+      fetchTopProjects();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const fetchTopProjects = async () => {
     try {
       const top = await GetTopProjects();
       const json: ProjectInfo[] = JSON.parse(top);
       setTopProjects(json);
-
     } catch (e) {
       console.log(e);
     }

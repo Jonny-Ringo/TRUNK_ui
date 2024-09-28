@@ -310,19 +310,63 @@ Handlers.add(
     Handlers.utils.hasMatchingTag("Action", "Get-Top-Projects"),
     function (msg)
         local jsonData
+
         if Projects and #Projects > 0 then
-            local topProjects = {}
-            for i = 1, math.min(3, #Projects) do
-                table.insert(topProjects, Projects[i])
+            local stakeMap = {}
+            for _, vote in ipairs(ProjectVotes) do
+                local projectId = vote.ID
+                if projectId then
+                    stakeMap[projectId] = (stakeMap[projectId] or 0) + vote.Stake
+                end
             end
+
+            local projectsWithTotalStake = {}
+            for _, project in ipairs(Projects) do
+                local totalStake = stakeMap[project.ID] or 0
+                table.insert(projectsWithTotalStake, {
+                    project = project,
+                    totalStake = totalStake
+                })
+            end
+
+            table.sort(projectsWithTotalStake, function(a, b)
+                return a.totalStake > b.totalStake
+            end)
+
+            local topProjects = {}
+            for i = 1, math.min(3, #projectsWithTotalStake) do
+                table.insert(topProjects, projectsWithTotalStake[i].project)
+            end
+
             jsonData = json.encode(topProjects)
         else
             jsonData = '{"error": "No Projects available"}'
         end
+
         print("Top Projects JSON: " .. jsonData)
+
         Handlers.utils.reply(jsonData)(msg)
     end
 )
+
+-- Handlers.add(
+--     "Get-Top-Projects",
+--     Handlers.utils.hasMatchingTag("Action", "Get-Top-Projects"),
+--     function (msg)
+--         local jsonData
+--         if Projects and #Projects > 0 then
+--             local topProjects = {}
+--             for i = 1, math.min(3, #Projects) do
+--                 table.insert(topProjects, Projects[i])
+--             end
+--             jsonData = json.encode(topProjects)
+--         else
+--             jsonData = '{"error": "No Projects available"}'
+--         end
+--         print("Top Projects JSON: " .. jsonData)
+--         Handlers.utils.reply(jsonData)(msg)
+--     end
+-- )
 
 -- Send({ Target = ao.id, Action = "GetVotes" })
 Handlers.add("Get-Votes", "GetVotes", function (msg)
