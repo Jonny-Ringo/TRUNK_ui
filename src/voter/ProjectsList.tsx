@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SendVoteForProject, VoteForProject, GetTrunkBalance } from '../app_wheel/MiscTools';
+import { VoteForProject, GetTrunkBalance } from '../app_wheel/MiscTools';
 import { useGlobalContext } from '../GlobalProvider';
 import Swal from 'sweetalert2';
 
@@ -33,10 +33,6 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
         return formated;
     }
 
-    useEffect(() => {
-        console.log("Projects: ", Projects);
-    }, [Projects]);
-
     const showSuccess = ( project : ProjectInfo ) => {
 
         Swal.fire({
@@ -63,7 +59,6 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
       const handleVote = (project: ProjectInfo) => {
 
         setSelectedProject(project);
-        console.log("Project: ", project.Name);
 
         Swal.fire({
             title: `Vote ${trunkBalance} Trunk for ${project.Name}?`,
@@ -101,18 +96,13 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
     const SubmitNewVote = async ( project: ProjectInfo ) => {
 
         if( !project ) { console.log("No Project Selected"); return; }
-        console.log("Voting for: ", project.ID);
 
         CallGetTrunkBalance();
 
         try {
-            // const result = await SendVoteForProject( ADDRESS, project.Name, project.ID.toString() );
             const result = await VoteForProject( project.ID.toString() );
             if( result === "Success" ) {
-                console.log("Vote Success");
                 showSuccess(project);
-            } else {
-              console.log("Vote Fail");
             }
 
             setProjects([]);
@@ -126,15 +116,6 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
     }
 
     useEffect(() => {
-        console.log("Selected Project: ", selectedProject);
-    }, [selectedProject]);
-
-    useEffect(() => {
-        console.log("Trunk Balance: ", trunkBalance);
-    }, [trunkBalance]);
-
-    useEffect(() => {
-        console.log("SetIsOpen");
         CallGetTrunkBalance();
     }, [setIsOpen]);
 

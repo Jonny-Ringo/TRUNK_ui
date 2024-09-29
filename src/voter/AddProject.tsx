@@ -132,8 +132,13 @@ const AddProject: React.FC<AddProjectModalProps> = ({ isOpen, onClose, address, 
                 </div>
 
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#9ECBFF] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Submit Project 0.01 TRUNK
+                    Submit Project
                 </button>
+                
+                <span className="ml-4 text-xs text-gray-400 mt-1 italic">
+                    Fee of 1 TRUNK
+                </span>
+                
             </form>
         );
     }

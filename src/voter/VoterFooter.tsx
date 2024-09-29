@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useGlobalContext } from '../GlobalProvider';
 import { GetTopProjects } from '../app_wheel/MiscTools';
 
 interface VoterFooterProps {
@@ -15,29 +14,19 @@ interface ProjectInfo {
   Owner: string;
 }
 
-const VoterFooter: React.FC<VoterFooterProps> = ({ isModalOpen, setVoterModalOpen }) => {
-  const { MODAL_INDEX, setMODAL_INDEX, PROJECTS, VOTES } = useGlobalContext();
+const VoterFooter: React.FC<VoterFooterProps> = ({ setVoterModalOpen }) => {
 
-  // State to store the index of the current image
   const [currentProjectIndex, setCurrentProjectIndex] = useState<number>(0);
-  const [allProjects, setAllProjects] = useState<ProjectInfo[]>([]);
   const [topProjects, setTopProjects] = useState<ProjectInfo[]>([]);
 
   useEffect(() => {
     fetchTopProjects();
   }, []);
 
-  // useEffect(() => {
-  //   if( topProjects.length > 0 ) {
-  //     console.log("Top Projects: ", topProjects);
-  //   }
-  // }, [ topProjects ]);
-
-
   useEffect(() => {
     const interval = setInterval(() => {
       fetchTops();
-    }, 10000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, []);

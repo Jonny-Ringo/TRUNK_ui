@@ -35,17 +35,17 @@ const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [PROJECTS, setPROJECTS] = useState<ProjectInfo[]>([]);
   const [VOTES, setVOTES] = useState<ProjectVote[]>([]);
 
-  useEffect(() => {
-    console.log("MODAL_INDEX: ", MODAL_INDEX);
-  }, [MODAL_INDEX]);
+  // useEffect(() => {
+  //   console.log("MODAL_INDEX: ", MODAL_INDEX);
+  // }, [MODAL_INDEX]);
 
-  useEffect(() => {
-    console.log("PROJECTS: ", PROJECTS);
-  }, [PROJECTS]);
+  // useEffect(() => {
+  //   console.log("PROJECTS: ", PROJECTS);
+  // }, [PROJECTS]);
 
-  useEffect(() => {
-    console.log("VOTES: ", VOTES);
-  }, [VOTES]);
+  // useEffect(() => {
+  //   console.log("VOTES: ", VOTES);
+  // }, [VOTES]);
 
   return (
     <GlobalContext.Provider

@@ -372,7 +372,7 @@ export const SendNewProjectWithPayment = async ( sender : string, name: string, 
             tags: [
                 { name: 'Action', value: 'Transfer' },
                 { name: 'Recipient', value: VOTER },
-                { name: 'Quantity', value:  "10" },
+                { name: 'Quantity', value:  "1000" },
                 { name: 'Sender', value: sender },
                 { name: "X-[NAME]", value: name },
                 { name: "X-[ICONURL]", value: iconURL },
@@ -500,49 +500,7 @@ export const CheckProjectStaker = async () => {
     }
 };
 
-// export const CheckProjectStaker = async () => { 
-//     console.log("Initiating Get-Project-Staker dryrun...");
-
-//     try {
-//         const result = await dryrun({
-//             process: VOTER,
-//             data: '',
-//             tags: [
-//                 { name: 'Action', value: 'Get-Project-Staker' },
-//             ],
-//             signer: createDataItemSigner(window.arweaveWallet),
-//         });
-
-//         console.log("Dryrun Result:", result);
-
-//         if (result && result.Messages && result.Messages.length > 0) {
-//             const messageData = result.Messages[0].Data;
-//             console.log("CheckProjectStaker Data:", messageData);
-
-//             // Parse the JSON string
-//             let parsedData;
-//             try {
-//                 parsedData = JSON.parse(messageData);
-//             } catch (parseError) {
-//                 console.error("Failed to parse JSON:", parseError);
-//                 return { success: false, error: "Invalid JSON response." };
-//             }
-
-//             return parsedData;
-//         } else {
-//             console.log("Got no response from dryrun!");
-//             return { success: false, error: "No response from dryrun." };
-//         }
-//     } catch (error) {
-//         console.error("Dryrun Error:", error);
-//         return { success: false, error: "Dryrun failed." };
-//     }
-// };
-
-
 export const SendProcessMessage = async (processID: string, action: string, data: string ): Promise<string> => { 
-    
-    // console.log("processID: " +processID);
     
     try {
         const getResult = await message({
@@ -567,7 +525,7 @@ export const SendProcessMessage = async (processID: string, action: string, data
         }
         
         console.log('Success: ', Messages[0]);
-        return Messages[0].Data; // Note: this is only sending the Data of the msg
+        return Messages[0].Data;
     } catch (error) {
         console.log('There was an error adding project: ' + error);
         return "Error";
@@ -575,9 +533,6 @@ export const SendProcessMessage = async (processID: string, action: string, data
 };
 
 export const SendVoteForProject = async ( sender : string, name : string, id : string ): Promise<string> => { 
-
-    console.log("Trunk:" +sender + " For: " +name+ " ID: " +id );
-    // return "Success";
 
     try {
         const sendTrunk = await message({
@@ -671,7 +626,7 @@ export const VoteForProject = async ( projectId: string ) => {
     // }
 };
 
-export const SortProjectsByVotes = (
+export const GetProjectsWithVotes = (
     projects: Project[],
     projectVotes: ProjectVote[]
   ): ProjectWithVotes[] => { 
@@ -692,8 +647,7 @@ export const SortProjectsByVotes = (
         totalVotes: stakeMap[project.ID] || 0,
       }));
     
-      // Sort the projects based on totalVotes in descending order
-      projectsWithVotes.sort((a, b) => b.totalVotes - a.totalVotes);
+      // Removed the sorting functionality
     
       return projectsWithVotes;
   };

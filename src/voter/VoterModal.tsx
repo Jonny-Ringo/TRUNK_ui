@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { dryrun, message, createDataItemSigner, result  } from "@permaweb/aoconnect";
-import { PermissionType } from 'arconnect';
-import { GetProjects, GetProjectVotes, SortProjectsByVotes } from '../app_wheel/MiscTools';
+import { dryrun } from "@permaweb/aoconnect";
+import { GetProjects } from '../app_wheel/MiscTools';
 import ProjectsList from './ProjectsList';
 import AddProject from './AddProject';
 import { useGlobalContext } from '../GlobalProvider';
 import Spinner from '../app_wheel/Spinner';
-
-const permissions: PermissionType[] = [
-    'ACCESS_ADDRESS',
-    'SIGNATURE',
-    'SIGN_TRANSACTION',
-    'DISPATCH'
-  ];
 
 interface StakerInfo {
     amount: string;
@@ -28,28 +20,20 @@ interface ProjectInfo {
     ID : number;
 }
 
-interface ProjectVote {
-  Stake: number;
-  Owner: string;
-  ID : number;
-}
-
 interface VoterModalProps {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   address: string;
 }
 
-const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"; //OT9qTE2467gcozb2g8R6D6N3nQS94ENcaAIJfUzHCww
-const VOTER = "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE" //aajbSwRdSrIIErliiiXDvHVUkauSPa2vmBATGkjDcf4
+const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
+const VOTER = "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4";
 
 const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) => {
 
     const {
       PROJECTS, 
-      setPROJECTS,
-      VOTES,
-      setVOTES
+      setPROJECTS
     } = useGlobalContext();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -60,28 +44,27 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
     const [projectsLoaded, setProjectsLoaded] = useState(false);
 
     useEffect(() => {
-        console.log("VoterModal Address: ", address);
-    }, [address]);
-
-    useEffect(() => {
       if(!isOpen) {
-        console.log("Voter Modal is closed");
       } else {
-        console.log("Voter Modal is open");
         setIsLoading(true);
         GetAllProjects();
       }
-  }, [isOpen]);
+    }, [isOpen]);
+
+    useEffect(() => {
+      if( projectsLoaded ) {
+          setProjects(PROJECTS);
+      } else {
+          setProjects([]);
+      }
+    }, [PROJECTS]);
 
   useEffect(() => {
-    
     if( projectsLoaded ) {
-        // const sortedByVote = SortProjectsByVotes(PROJECTS, VOTES); console.log("Sorted By Vote: ", sortedByVote);
         setProjects(PROJECTS);
     } else {
         setProjects([]);
     }
-
   }, [projectsLoaded]);
 
     useEffect(() => {
@@ -107,7 +90,7 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
             const json = JSON.parse(processResponse);
             
             const allStakers: { [key: string]: StakerInfo } = json;
-            console.log("All Stakers: ", allStakers);
+            // console.log("All Stakers: ", allStakers);
         };
     
         setupIframe();
