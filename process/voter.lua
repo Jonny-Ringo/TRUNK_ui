@@ -311,7 +311,7 @@ Handlers.add(
     function (msg)
         local jsonData
 
-        -- Step 1: Check if the Projects table exists and has entries
+        -- Step 1: Check if the Projects table exists and has entries 
         if Projects and #Projects > 0 then
             -- Step 2: Aggregate Stakes per Project from ProjectVotes
             local stakeMap = {}
@@ -572,13 +572,6 @@ Handlers.add("Project-Vote", "Vote", function (msg)
     local res = Receive( { Target=ao.id, From=TRUNK, Account=address} )
     local balance = res.Data or 0
     print(balance .. " for " .. address)
-
-    -- Then insert the balance into the table
-
-    -- local anotherId = disIdBrah + 1
-    
-    -- print("Registering Vote: " .. anotherId)
-    -- RegisterVote(anotherId, address, res.Data)
 end)
 
 Handlers.add("Project-Vote-Now", "VoteMeNow", function (msg)
@@ -597,9 +590,6 @@ Handlers.add("Project-Vote-Now", "VoteMeNow", function (msg)
 
     -- Then insert the balance into the table
     RegisterBalanceForProject(balance, address)
-    
-    -- print("Registering Vote: " .. projectId)
-    -- RegisterVote(projectId, address, balance)
 end)
 
 -- Send({ Target=ao.id, Action="GetTrunkBalance"})
