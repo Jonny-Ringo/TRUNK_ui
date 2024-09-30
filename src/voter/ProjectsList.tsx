@@ -147,7 +147,7 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
                 {/* Project Icon */}
                 <div className="flex-shrink-0">
                     <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">
-                        <img className="w-12 h-12 rounded-full" src={project.IconURL} alt={project.Name} />
+                        <img className="w-12 h-12 rounded-full border-2 border-white" src={project.IconURL} alt={project.Name} />
                     </a>
                 </div>
 
@@ -155,9 +155,11 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
                 <div className="flex-1 min-w-0" >
                 
                 {/* Project Name */}
+                <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">
                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                     {project.Name}
                 </p>
+                </a>
 
                     {/* Vote Info and Button in a Single Row */}
                     <div className="flex items-center mt-1">
