@@ -58,7 +58,7 @@ const VoterFooter: React.FC<VoterFooterProps> = ({ setVoterModalOpen }) => {
   }, [topProjects.length]);
 
   const onOpenVoterModal = () => {
-    console.log("Opening voter modal");
+    // console.log("Opening voter modal");
     setVoterModalOpen(true);
   };
 

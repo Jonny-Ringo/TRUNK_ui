@@ -81,7 +81,7 @@ export const GetAddressStakedTrunkAmount = async (address: string): Promise<numb
 
 export const GetTrunkBalance = async (address: string): Promise<number> => { 
     if (address) {
-        console.log( "Fetching balance for :" + address);
+        // console.log( "Fetching balance for :" + address);
         try {
             const messageResponse = await dryrun({
                 process: TRUNK,
@@ -363,8 +363,8 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
 
 export const SendNewProjectWithPayment = async ( sender : string, name: string, iconURL: string, siteURL: string ): Promise<string> => { 
 
-    console.log("Sending Trunk To:" + sender );
-    console.log("Adding Project: " + name + " " + iconURL + " " + siteURL);
+    // console.log("Sending Trunk To:" + sender );
+    // console.log("Adding Project: " + name + " " + iconURL + " " + siteURL);
 
     try {
         const sendTrunk = await message({
@@ -394,9 +394,9 @@ export const SendNewProjectWithPayment = async ( sender : string, name: string, 
         const actionTag = Messages[0].Tags.find((tag: Tag) => tag.name === 'Action')
         if (actionTag.value === "Debit-Notice") {
 
-            console.log("Debit-Notice Tags: ", Messages[0].Tags);
-            console.log("Debit-Notice Quantity: ", Messages[0].Tags["Quantity"]);
-            console.log("From: ", Messages[0].Target);
+            // console.log("Debit-Notice Tags: ", Messages[0].Tags);
+            // console.log("Debit-Notice Quantity: ", Messages[0].Tags["Quantity"]);
+            // console.log("From: ", Messages[0].Target);
     }
         return "Success";
     } catch (error) {
@@ -427,7 +427,7 @@ export const GetProjectVotes = async () => {
 
 // Send({ Target = ao.id, Action = "Get-Sorted-Project" })
 export const GetProjects = async () => { 
-    console.log("Get-Sorted-Project...");
+    // console.log("Get-Sorted-Project...");
     try {
         const result = await dryrun({
             process: VOTER,
@@ -448,7 +448,7 @@ export const GetProjects = async () => {
 
 // Send({ Target = ao.id, Action = "Get-Top-Projects" })
 export const GetTopProjects = async () => { 
-    console.log("Get-Top-Projects...");
+    // console.log("Get-Top-Projects...");
     try {
         const result = await dryrun({
             process: VOTER,
@@ -469,7 +469,7 @@ export const GetTopProjects = async () => {
 
 // Send({ Target = ao.id, Action = "Get-Project-Staker" })
 export const CheckProjectStaker = async () => { 
-    console.log("Get-Project-Staker...");
+    // console.log("Get-Project-Staker...");
 
      try {
         const getResult = await message({
@@ -492,7 +492,7 @@ export const CheckProjectStaker = async () => {
             return "No messages were returned from ao. Please try later."; 
         }
         
-        console.log('Success: ', Messages[0]);
+        // console.log('Success: ', Messages[0]);
         return Messages[0].Data; // Note: this is only sending the Data of the msg
     } catch (error) {
         console.log('There was an error adding project: ' + error);
@@ -524,7 +524,7 @@ export const SendProcessMessage = async (processID: string, action: string, data
             return "No messages were returned from ao. Please try later."; 
         }
         
-        console.log('Success: ', Messages[0]);
+        // console.log('Success: ', Messages[0]);
         return Messages[0].Data;
     } catch (error) {
         console.log('There was an error adding project: ' + error);
@@ -573,15 +573,13 @@ export const SendVoteForProject = async ( sender : string, name : string, id : s
     }
 };
 
-// Send({ Target = ao.id, Action = "Staker" })
 export const VoteForProject = async ( projectId: string ) => { 
-    console.log( "VoteForProject: " +projectId );
-
+    // console.log( "VoteForProject: " +projectId );
     try {
         const getResult = await message({
             process: VOTER,
             tags: [
-                { name: 'Action', value: 'VoteMeNow' },
+                { name: 'Action', value: 'SendProjectVote' },
                 { name: 'PROJECTID', value: projectId },
             ],
             signer: createDataItemSigner(window.arweaveWallet),
@@ -599,39 +597,21 @@ export const VoteForProject = async ( projectId: string ) => {
             return "No messages were returned from ao. Please try later."; 
         }
         
-        console.log('Success: ', Messages[0]);
+        // console.log('Success: ', Messages[0]);
 
         return Messages[0].Data; // Note: this is only sending the Data of the msg
     } catch (error) {
         console.log('There was an error adding project: ' + error);
         return "Error";
     }
-
-    // try {
-    //     const result = await dryrun({
-    //         process: VOTER,
-    //         tags: [
-    //             { name: 'Action', value: 'Staker' },
-    //         ],
-    //         signer: createDataItemSigner(window.arweaveWallet),
-    //     });
-    //     if (result) {
-    //         console.log("Staker Result: " , result.Messages[0] );
-    //         return result.Messages[0];
-    //       } else {
-    //         console.log("Got no response from dryrun!")
-    //       }
-    // } catch (error) {
-    //     return "Error";
-    // }
 };
 
 export const GetProjectsWithVotes = (
     projects: Project[],
     projectVotes: ProjectVote[]
   ): ProjectWithVotes[] => { 
-      // Create a mapping from Project ID to total stake
-      const stakeMap: { [key: number]: number } = {};
+      
+    const stakeMap: { [key: number]: number } = {};
   
       projectVotes.forEach((vote) => {
         if (vote.ID in stakeMap) {
@@ -641,13 +621,10 @@ export const GetProjectsWithVotes = (
         }
       });
     
-      // Augment each project with its totalVotes (sum of stakes)
       const projectsWithVotes: ProjectWithVotes[] = projects.map((project) => ({
         ...project,
         totalVotes: stakeMap[project.ID] || 0,
       }));
-    
-      // Removed the sorting functionality
     
       return projectsWithVotes;
   };

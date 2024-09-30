@@ -89,10 +89,10 @@ function Wheel () {
         stateMachines: "app_state",
         autoplay: true,
         onLoad: () => {
-          console.log("Rive loaded!");
+          // console.log("Rive loaded!");
         },
         onPlay: () => {
-          console.log('Animation is playing..');
+          // console.log('Animation is playing..');
         }
       },
       {
@@ -207,7 +207,7 @@ function Wheel () {
       }, []);
 
       const checkConnected = async () => {
-        console.log("Fetching address...");
+        // console.log("Fetching address...");
         try {
           // Check if ArConnect is available
           if (window.arweaveWallet) {
@@ -216,7 +216,7 @@ function Wheel () {
               const currentPermissions = await window.arweaveWallet.getPermissions();
               if (currentPermissions.includes('ACCESS_ADDRESS')) {
                 const address = await window.arweaveWallet.getActiveAddress();
-                console.log("Connected: ", address);
+                // console.log("Connected: ", address);
                 setAddress(address);
                 setADDRESS(address); // Global
                 setIsConnected(true);
