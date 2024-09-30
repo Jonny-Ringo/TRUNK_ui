@@ -5,6 +5,13 @@ ProjectStakers = ProjectStakers or {}
 ProjectIdCounter = ProjectIdCounter or 0
 ProjectVotes = ProjectVotes or {}
 
+AdminsSet = {}
+Admins = Admins or {
+    "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4",
+    "peFURnJVIrHJjekUXXEdFmqO707U19x5DnFsBnTeyNs",
+    "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ",
+} 
+
 local TRUNK = TRUNK or "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ" -- Trunk 2.0
 
 function InitNewProject(name, siteURL, iconURL, stakeAmount, owner)
@@ -46,6 +53,23 @@ local function isSenderInProjects(sender)
     end
     
     return false
+end
+
+local function findProjectByID(id)
+    for _, project in ipairs(Projects) do
+        if project.ID == id then
+            return project
+        end
+    end
+    return nil
+end
+
+for _, admin in ipairs(Admins) do
+    AdminsSet[admin] = true
+end
+
+local function isAdmin(sender)
+    return AdminsSet[sender] == true
 end
 
 function RegisterVoteForProject( projectId, voterAddress )
@@ -357,6 +381,103 @@ Handlers.add("Send-Project-Vote", "SendProjectVote", function (msg)
     -- Then insert the balance into the table
     RegisterBalanceForProject(balance, address)
 end)
+
+Handlers.add(
+    "Update-Project",
+    Handlers.utils.hasMatchingTag("Action", "Update-Project"),
+    function (msg)
+        local jsonData
+
+        print("Update-Project: " .. msg.From)
+
+        local projectId = tonumber(msg["PROJECTID"])
+        local newName = msg["NAME"]
+        local newSiteURL = msg["SITEURL"]
+        local newIconURL = msg["ICONURL"]
+        local sender = msg.From or "Unknown Sender"
+
+        local projectToUpdate = findProjectByID(projectId)
+
+        if not projectToUpdate then
+            print("Error: Project with ID " .. projectId .. " does not exist.")
+            jsonData = json.encode({ success = false, message = "Project with ID " .. projectId .. " does not exist." })
+            Handlers.utils.reply(jsonData)(msg)
+            return
+        end
+
+        if not isAdmin(sender) then
+            print("Error: Sender is not an admin.")
+            jsonData = json.encode({ success = false, message = "You are not authorized to update projects." })
+            Handlers.utils.reply(jsonData)(msg)
+            return
+        end
+
+        -- Update the project's Name, SiteURL and IconURL
+        projectToUpdate.Name = newName
+        projectToUpdate.SiteURL = newSiteURL
+        projectToUpdate.IconURL = newIconURL
+
+        print("Project with ID " .. projectId .. " has been updated by " .. sender .. ".")
+        jsonData = json.encode({ success = true, message = "Project successfully updated." })
+        Handlers.utils.reply(jsonData)(msg)
+    end
+)
+
+Handlers.add(
+    "Remove-Project",
+    Handlers.utils.hasMatchingTag("Action", "Remove-Project"),
+    function (msg)
+        local jsonData
+
+        -- Extract parameters from the message
+        local projectId = tonumber(msg["PROJECTID"])
+        local sender = msg.From or "Unknown Sender"
+
+        print("Remove-Project: " .. sender .. " attempting to remove Project ID: " .. tostring(projectId))
+
+        -- Validate Project ID
+        if not projectId then
+            print("Error: Invalid or missing Project ID.")
+            jsonData = json.encode({ success = false, message = "Invalid or missing Project ID." })
+            Handlers.utils.reply(jsonData)(msg)
+            return
+        end
+
+        -- Check if the sender is an admin
+        if not isAdmin(sender) then
+            print("Error: Sender is not an admin.")
+            jsonData = json.encode({ success = false, message = "You are not authorized to remove projects." })
+            Handlers.utils.reply(jsonData)(msg)
+            return
+        end
+
+        -- Find the project by ID
+        local projectToRemove = findProjectByID(projectId)
+
+        if not projectToRemove then
+            print("Error: Project with ID " .. projectId .. " does not exist.")
+            jsonData = json.encode({ success = false, message = "Project with ID " .. projectId .. " does not exist." })
+            Handlers.utils.reply(jsonData)(msg)
+            return
+        end
+
+        -- Remove the project from the Projects table
+        for index, project in ipairs(Projects) do
+            if project.ID == projectId then
+                table.remove(Projects, index)
+                print("Project with ID " .. projectId .. " has been removed by admin " .. sender .. ".")
+                jsonData = json.encode({ success = true, message = "Project successfully removed." })
+                Handlers.utils.reply(jsonData)(msg)
+                return
+            end
+        end
+
+        -- Fallback in case project wasn't removed (shouldn't happen)
+        print("Error: Failed to remove the project. Please try again.")
+        jsonData = json.encode({ success = false, message = "Failed to remove the project. Please try again." })
+        Handlers.utils.reply(jsonData)(msg)
+    end
+)
 
 -- ToDo:
 -- Remove Project By Admin Handler

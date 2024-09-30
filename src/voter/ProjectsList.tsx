@@ -119,6 +119,10 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
         CallGetTrunkBalance();
     }, [setIsOpen]);
 
+    useEffect(() => {
+        if( selectedProject ) { console.log("Selected Project: ", selectedProject); }
+    }, [selectedProject]);
+
     return (
     <div >
         {Projects.length > 0 && <>
