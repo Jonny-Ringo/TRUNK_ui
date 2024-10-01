@@ -1,3 +1,4 @@
+-- Process ID: CjM09L7h8yG-jbzQk67IIwuu__mz1hYQKvICoDo9csw
 local json = require("json")
 
 Projects = Projects or {}
@@ -7,7 +8,7 @@ ProjectVotes = ProjectVotes or {}
 
 AdminsSet = {}
 Admins = Admins or {
-    "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4",
+    "CjM09L7h8yG-jbzQk67IIwuu__mz1hYQKvICoDo9csw",
     "peFURnJVIrHJjekUXXEdFmqO707U19x5DnFsBnTeyNs",
     "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ",
 } 
@@ -423,19 +424,18 @@ Handlers.add(
     end
 )
 
+-- Admin Remove Project Handler
 Handlers.add(
     "Remove-Project",
     Handlers.utils.hasMatchingTag("Action", "Remove-Project"),
     function (msg)
         local jsonData
 
-        -- Extract parameters from the message
         local projectId = tonumber(msg["PROJECTID"])
         local sender = msg.From or "Unknown Sender"
 
         print("Remove-Project: " .. sender .. " attempting to remove Project ID: " .. tostring(projectId))
 
-        -- Validate Project ID
         if not projectId then
             print("Error: Invalid or missing Project ID.")
             jsonData = json.encode({ success = false, message = "Invalid or missing Project ID." })
@@ -443,7 +443,6 @@ Handlers.add(
             return
         end
 
-        -- Check if the sender is an admin
         if not isAdmin(sender) then
             print("Error: Sender is not an admin.")
             jsonData = json.encode({ success = false, message = "You are not authorized to remove projects." })
@@ -451,7 +450,6 @@ Handlers.add(
             return
         end
 
-        -- Find the project by ID
         local projectToRemove = findProjectByID(projectId)
 
         if not projectToRemove then
@@ -461,7 +459,6 @@ Handlers.add(
             return
         end
 
-        -- Remove the project from the Projects table
         for index, project in ipairs(Projects) do
             if project.ID == projectId then
                 table.remove(Projects, index)
@@ -472,14 +469,52 @@ Handlers.add(
             end
         end
 
-        -- Fallback in case project wasn't removed (shouldn't happen)
         print("Error: Failed to remove the project. Please try again.")
         jsonData = json.encode({ success = false, message = "Failed to remove the project. Please try again." })
         Handlers.utils.reply(jsonData)(msg)
     end
 )
 
+-- Admin Add Project Handler
+Handlers.add(
+    "Admin-Add-Project",
+    Handlers.utils.hasMatchingTag("Action", "Admin-Add-Project"),
+    function (msg)
+        local jsonData
+
+        local projectName = msg["NAME"]
+        local siteURL = msg["SITEURL"]
+        local iconURL = msg["ICONURL"]
+        local stakeAmount = tonumber(msg["STAKE"])
+        local owner = msg["OWNER"]
+        local sender = msg.From or "Unknown Sender"
+
+        print("Admin-Add-Project: " .. sender .. " attempting to add a new project.")
+
+        if not isAdmin(sender) then
+            print("Error: Sender is not an admin.")
+            jsonData = json.encode({ success = false, message = "You are not authorized to add projects." })
+            Handlers.utils.reply(jsonData)(msg)
+            return
+        end
+
+        local success, newProject = pcall(InitNewProject, projectName, siteURL, iconURL, stakeAmount, owner)
+
+        if not success then
+            print("Error initializing new project: " .. tostring(newProject))
+            jsonData = json.encode({ success = false, message = "Failed to initialize the project." })
+            Handlers.utils.reply(jsonData)(msg)
+            return
+        end
+
+        table.insert(Projects, newProject)
+        print("New Project Added: " .. newProject.Name .. " (ID: " .. newProject.ID .. ") by admin " .. sender .. ".")
+
+        jsonData = json.encode({ success = true, message = "Project successfully added.", project = newProject })
+        Handlers.utils.reply(jsonData)(msg)
+    end
+)
+
 -- ToDo:
--- Remove Project By Admin Handler
 -- Remove Project By Owner Handler
 -- Let Project Owner edit project details

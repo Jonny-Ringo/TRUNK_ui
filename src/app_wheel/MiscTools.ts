@@ -2,7 +2,7 @@ import { dryrun, message, createDataItemSigner, result } from "@permaweb/aoconne
 import { PermissionType } from 'arconnect';
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
-const VOTER = "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
+const VOTER = "CjM09L7h8yG-jbzQk67IIwuu__mz1hYQKvICoDo9csw";
 
 const permissions: PermissionType[] = [
     'ACCESS_ADDRESS',

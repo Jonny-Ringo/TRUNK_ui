@@ -8,8 +8,6 @@ import { SubmitNewProject, GetTrunkBalance, SendTrunk, GetProjects, CheckProject
 import { useGlobalContext } from '../GlobalProvider';
 import Swal from 'sweetalert2';
 
-const VOTER = "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4"; //"7QfXjBhW2sU3FJfPJ7t-_Cn8ScoZuzQOPSprNC4q_CE";
-
 interface AddProjectModalProps {
     isOpen: boolean;
     onClose: () => void;

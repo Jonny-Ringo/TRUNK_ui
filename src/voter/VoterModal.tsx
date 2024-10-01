@@ -27,7 +27,6 @@ interface VoterModalProps {
 }
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ";
-const VOTER = "FdEWGam9Jv5l8b5t3a5buqvzIZz8c_Z2oJ4eDnlylt4";
 
 const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) => {
 
