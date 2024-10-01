@@ -205,20 +205,8 @@ export const FetchAddress = async () => {
       } catch (error) {
         console.error("Failed to fetch address:", error);
       }
-
-    // await window.arweaveWallet.connect(permissions, {
-    //     name: "TRUNK",
-    //     logo: "4eTBOaxZSSyGbpKlHyilxNKhXbocuZdiMBYIORjS4f0"
-    // });
-    // try {
-    //     const address = await window.arweaveWallet.getActiveAddress();
-    //     console.log("Address: ", address);
-    // } catch (error) {
-    //     console.error(error);
-    // }
 };
 
-// name, iconURL, siteURL, stake, owner
 export const SubmitNewProject = async (name: string, iconURL: string, siteURL: string, stake: string, owner: string ): Promise<string> => { 
     console.log("Submiting New Project: " +name + " " + iconURL + " " + siteURL + " " + stake + " " + owner);
     
@@ -260,14 +248,6 @@ export const SubmitNewProject = async (name: string, iconURL: string, siteURL: s
 
 export const CheckOwnerBalance = async (amount: string, owner: string ): Promise<string> => { 
     console.log("Checking Owner Balance: " + amount + " " + owner);
-    
-    // const value = parseInt(stake);
-    // const units = value * 1000;
-    // const trunkUnits = units.toString();
-
-    // console.log("Staking Value:", value);
-    // console.log("Units to Stake:", units);
-    // console.log("Request Payload:", trunkUnits);
 
     try {
         const getBalance = await message({
@@ -311,23 +291,6 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
     console.log("Units to Send:", units);
     console.log("Send Payload:", trunkUnits);
 
-    //Send({ Target = "Sa0iBLPNyJQrwpTTG-tWLQU-1QeUAJA73DdxGGiKoJc", Action = "Transfer", Quantity = "300000", Recipient = "eqWPXgEngDqBptVFmSlJT0YC9wgyAD4U8l1wrqKu_WE" })
-
-    // Send 0.001 TRUNK
-    // const sendTrunk = await message({
-    //     process: owner,
-    //     tags: [
-    //         { name: 'Action', value: 'Transfer' },
-    //         { name: 'Quantity', value: "0.001" },
-    //         { name: 'Recipient', value: VOTER },
-    //     ],
-    //     signer: createDataItemSigner(window.arweaveWallet),
-    // });
-    // const { mess, err } = await result({
-    //     message: sendTrunk,
-    //     process: VOTER,
-    // });
-
     try {
         const sendTrunk = await message({
             process: TRUNK,
@@ -355,16 +318,13 @@ export const SendTrunk = async (amount: string, sender : string, recipient : str
             console.log("Debit-Notice: ", actionTag.value);
             console.log("From: ", Messages[0].Target);
         }
-        return "Success"; //Messages[0].tx;
+        return "Success";
     } catch (error) {
         return "Error";
     }
 };
 
 export const SendNewProjectWithPayment = async ( sender : string, name: string, iconURL: string, siteURL: string ): Promise<string> => { 
-
-    // console.log("Sending Trunk To:" + sender );
-    // console.log("Adding Project: " + name + " " + iconURL + " " + siteURL);
 
     try {
         const sendTrunk = await message({
@@ -404,7 +364,6 @@ export const SendNewProjectWithPayment = async ( sender : string, name: string, 
     }
 };
 
-// Send({ Target = ao.id, Action = "GetVotes" })
 export const GetProjectVotes = async () => { 
     console.log("GetVotes...");
     try {
@@ -425,9 +384,7 @@ export const GetProjectVotes = async () => {
     }
 };
 
-// Send({ Target = ao.id, Action = "Get-Sorted-Project" })
 export const GetProjects = async () => { 
-    // console.log("Get-Sorted-Project...");
     try {
         const result = await dryrun({
             process: VOTER,
@@ -446,9 +403,7 @@ export const GetProjects = async () => {
     }
 };
 
-// Send({ Target = ao.id, Action = "Get-Top-Projects" })
 export const GetTopProjects = async () => { 
-    // console.log("Get-Top-Projects...");
     try {
         const result = await dryrun({
             process: VOTER,
@@ -467,9 +422,7 @@ export const GetTopProjects = async () => {
     }
 };
 
-// Send({ Target = ao.id, Action = "Get-Project-Staker" })
 export const CheckProjectStaker = async () => { 
-    // console.log("Get-Project-Staker...");
 
      try {
         const getResult = await message({
@@ -492,8 +445,7 @@ export const CheckProjectStaker = async () => {
             return "No messages were returned from ao. Please try later."; 
         }
         
-        // console.log('Success: ', Messages[0]);
-        return Messages[0].Data; // Note: this is only sending the Data of the msg
+        return Messages[0].Data;
     } catch (error) {
         console.log('There was an error adding project: ' + error);
         return "Error";
@@ -524,7 +476,6 @@ export const SendProcessMessage = async (processID: string, action: string, data
             return "No messages were returned from ao. Please try later."; 
         }
         
-        // console.log('Success: ', Messages[0]);
         return Messages[0].Data;
     } catch (error) {
         console.log('There was an error adding project: ' + error);
@@ -574,7 +525,6 @@ export const SendVoteForProject = async ( sender : string, name : string, id : s
 };
 
 export const VoteForProject = async ( projectId: string ) => { 
-    // console.log( "VoteForProject: " +projectId );
     try {
         const getResult = await message({
             process: VOTER,
@@ -597,9 +547,7 @@ export const VoteForProject = async ( projectId: string ) => {
             return "No messages were returned from ao. Please try later."; 
         }
         
-        // console.log('Success: ', Messages[0]);
-
-        return Messages[0].Data; // Note: this is only sending the Data of the msg
+        return Messages[0].Data;
     } catch (error) {
         console.log('There was an error adding project: ' + error);
         return "Error";

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { VoteForProject, GetTrunkBalance } from '../app_wheel/MiscTools';
 import { useGlobalContext } from '../GlobalProvider';
+import { IoMdInformationCircle } from "react-icons/io";
 import Swal from 'sweetalert2';
 
 interface ProjectInfo {
@@ -130,6 +131,8 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
             
             <div className="flex items-center justify-center">
                 <h1 className="text-lg text-center font-semibold text-gray-900 dark:text-white">AO Project Leaderboard</h1>
+                {/* Info button to show the user what "Project Leaderboard" is exactly */}
+                {/* &nbsp;<IoMdInformationCircle onClick={ ()=>{ console.log("Blah"); } } /> */}
             </div>
 
             {Projects.length === 0 && <>
@@ -143,29 +146,24 @@ function ProjectsList ( { Projects , setProjects,  setIsOpen }: ProjectsListProp
             <li key={index} className="pt-3 pb-3 sm:pt-4 sm:pb-4">
             <div className="flex items-center space-x-4 rtl:space-x-reverse">
 
-                {/* Project Index */}
                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
                     #{index + 1}
                 </div>
                 
-                {/* Project Icon */}
                 <div className="flex-shrink-0">
                     <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">
                         <img className="w-12 h-12 rounded-full border-2 border-white" src={project.IconURL} alt={project.Name} />
                     </a>
                 </div>
 
-                {/* Project Details */}
                 <div className="flex-1 min-w-0" >
                 
-                {/* Project Name */}
                 <a href={project.SiteURL} target="_blank" rel="noopener noreferrer">
                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                     {project.Name}
                 </p>
                 </a>
 
-                    {/* Vote Info and Button in a Single Row */}
                     <div className="flex items-center mt-1">
                         <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                             {FormatStake(project.Stake)} | {project.Owner}

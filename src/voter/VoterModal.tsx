@@ -158,6 +158,8 @@ const VoterModal: React.FC<VoterModalProps> = ({ isOpen, setIsOpen, address }) =
               </svg>
           </button>
 
+          
+
           <ProjectsList Projects={Projects} setProjects={setProjects} setIsOpen={setIsOpen} />
 
           <AddProject isOpen={addProjectOpen} onClose={() => setAddProjectOpen(false)} address={address}
