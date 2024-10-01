@@ -1,12 +1,15 @@
-Trunk Voter
+# Trunk Voter
 
-Admin Handlers
+## Admin Handlers
 
--- Admin-Add-Project
-Send({ Target = "", Action = "Admin-Add-Project", NAME = "", SITEURL = "", ICONURL = "", STAKE = "", OWNER = "" })
+**-- Admin-Add-Project**
 
--- Admin Remove Project
-Send({ Target = "", Action = "Remove-Project", PROJECTID="" })
+```Send({ Target = "", Action = "Admin-Add-Project", NAME = "", SITEURL = "", ICONURL = "", STAKE = "", OWNER = "" })```
 
--- Admin Update Project
-Send({ Target = "", Action = "Update-Project", PROJECTID="", NAME = "", SITEURL = "", ICONURL = "" })
+**-- Admin Remove Project**
+
+```Send({ Target = "", Action = "Remove-Project", PROJECTID="" })```
+
+**-- Admin Update Project**
+
+```Send({ Target = "", Action = "Update-Project", PROJECTID="", NAME = "", SITEURL = "", ICONURL = "" })```
