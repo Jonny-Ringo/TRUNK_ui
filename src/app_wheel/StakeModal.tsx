@@ -77,15 +77,15 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     useEffect(() => {
 
         if(!isOpen) {
-          console.log("Closing stake modal... ");
+          // console.log("Closing stake modal... ");
         } else {
-          console.log("Opening stake modal...");
+          // console.log("Opening stake modal...");
 
           
             if( address === "" ) {
-                console.error("No address provided!");
+                // console.error("No address provided!");
             } else {
-                console.log("Modal Address: " , address);
+                // console.log("Modal Address: " , address);
             }
 
           UpdateUI();
@@ -249,6 +249,11 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
             >
                 Unstake TRUNK
             </button>
+            
+            <span className="text-xs text-gray-400 mt-1 italic">
+                Can take &gt; 24 hours
+            </span>
+
             </div>
           </>
         );

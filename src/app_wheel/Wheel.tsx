@@ -14,6 +14,10 @@ import VoteModal from './VoteModal';
 import './extrastyle.css';
 import { GetAddressStakedTrunkAmount } from './MiscTools';
 import StakeModal from './StakeModal';
+import VoterModal from '../voter/VoterModal';
+import AddProject from '../voter/AddProject';
+import VoterFooter from '../voter/VoterFooter';
+import { useGlobalContext } from '../GlobalProvider';
 
 
 const TRUNK = "wOrb8b_V8QixWyXZub48Ki5B6OIDyf_p1ngoonsaRpQ"
@@ -50,9 +54,17 @@ interface RiveEvent {
 
 function Wheel () {
 
+  const {
+      setADDRESS,
+  } = useGlobalContext();
+
     const [iframeSrc, setIframeSrc] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isStakeModalOpen, setIsStakeModalOpen] = useState(false);
+
+    // Project Leaderboard
+    const [isVoterModalOpen, setIsVoterModalOpen] = useState(false);
+    const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
     const [isConnected, setIsConnected] = useState(false);
     const [address, setAddress] = useState<string>('');
@@ -72,15 +84,15 @@ function Wheel () {
       container: canvasContainerRef,
     } = useRive(
       {
-        src: "/app_wheel/trunk_app.riv",
+        src: "https://arweave.net/F6RbszQLD3LlJtWJFRSyujNg7uUyYeCn0sXjBuQO3YM",
         artboard: "TrunkUI",
         stateMachines: "app_state",
         autoplay: true,
         onLoad: () => {
-          console.log("Rive loaded!");
+          // console.log("Rive loaded!");
         },
         onPlay: () => {
-          console.log('Animation is playing..');
+          // console.log('Animation is playing..');
         }
       },
       {
@@ -195,7 +207,7 @@ function Wheel () {
       }, []);
 
       const checkConnected = async () => {
-        console.log("Fetching address...");
+        // console.log("Fetching address...");
         try {
           // Check if ArConnect is available
           if (window.arweaveWallet) {
@@ -204,8 +216,9 @@ function Wheel () {
               const currentPermissions = await window.arweaveWallet.getPermissions();
               if (currentPermissions.includes('ACCESS_ADDRESS')) {
                 const address = await window.arweaveWallet.getActiveAddress();
-                console.log("Connected: ", address);
+                // console.log("Connected: ", address);
                 setAddress(address);
+                setADDRESS(address); // Global
                 setIsConnected(true);
               } else {
                 console.log("Not connected.");
@@ -306,11 +319,12 @@ function Wheel () {
                   {typedValue}
                 </div>
             </div>
+
+            <VoterFooter isModalOpen={isVoterModalOpen} setVoterModalOpen={setIsVoterModalOpen} />
+            <VoterModal isOpen={isVoterModalOpen} setIsOpen={setIsVoterModalOpen} address={ address } />
             
         </div>
-
-        
-        </div>
+      </div>
 	);
 }
 
