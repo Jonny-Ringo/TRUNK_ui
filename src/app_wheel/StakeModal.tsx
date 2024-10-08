@@ -49,30 +49,6 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [loadMessage, setLoadMessage] = useState('');
 
-    const {
-        rive,
-        setCanvasRef,
-        setContainerRef,
-        canvas: canvasRef,
-        container: canvasContainerRef,
-      } = useRive(
-        {
-          src: "/app_wheel/trunk_spinner.riv",
-          artboard: "spinner",
-          stateMachines: "main",
-          autoplay: true,
-          onLoad: () => {
-            console.log("Rive loaded!");
-          },
-          onPlay: () => {
-            console.log('Animation is playing..');
-          }
-        },
-        {
-          shouldResizeCanvasToContainer: true,
-        }
-      );
-
     // Reset stake/unstake values
     useEffect(() => {
 
@@ -185,7 +161,7 @@ const StakeModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
             <div className="flex flex-row items-center justify-center space-x-2">
 
                 <div className="flex flex-col items-center justify-center space-x-2">
-                    <img src="Trunk_Logo_White.png" alt="Trunk Logo" className="w-24 h-24" />
+                    <img src="https://arweave.net/lX95zKTCNEK007vbeaiEML13epfoz75Nu20HOmEzXPE" alt="Trunk Logo" className="w-24 h-24" />
                 </div>
 
                 

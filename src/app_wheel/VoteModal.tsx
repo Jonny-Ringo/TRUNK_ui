@@ -158,7 +158,7 @@ const VoteModal: React.FC<VoteModalProps> = ({ isOpen, onClose, address }) => {
           <>
             <div className="flex flex-row items-center justify-center space-x-2">
                 <div className="flex flex-col items-center justify-center space-x-2">
-                    <img src="Trunk_Logo_White.png" alt="Trunk Logo" className="w-12 h-12" />
+                    <img src="https://arweave.net/lX95zKTCNEK007vbeaiEML13epfoz75Nu20HOmEzXPE" alt="Trunk Logo" className="w-12 h-12" />
                 </div>
                 <div className="flex flex-col items-center justify-center space-x-2">
                 <p className="text-white"> Staked: {maxStakedBalance !== null && maxStakedBalance !== undefined ? maxStakedBalance.toLocaleString() : 'N/A'} </p>

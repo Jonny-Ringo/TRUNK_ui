@@ -290,7 +290,7 @@ function Wheel () {
       <div className='wheel'>
       <div className="min-h-screen bg-cover bg-center bg-repeat-x"
         style={{ 
-          backgroundImage: `url('./app_wheel/background.png')`,
+          backgroundImage: `url('https://arweave.net/i2qyJZchdmGfLNNg806O3VryaiQynnpY3gGuG06-st0')`,
          }}>
 
           <div className="wrapper">
